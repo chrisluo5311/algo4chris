@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.algo</groupId>
+    <artifactId>algo4chris</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>algo4chris</name>
+    <description>algo4chris</description>
+    <!-- 父模块打包类型必须为pom -->
+    <packaging>pom</packaging>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.6.5</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+    <properties>
+        <java.version>1.8</java.version>
+    </properties>
+    <modules>
+        <module>algo4chris-common</module>
+        <module>algo4chris-dal</module>
+        <module>algo4chris-service</module>
+        <module>algo4chris-web</module>
+    </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.algo4chris</groupId>
+                <artifactId>algo4chris-common</artifactId>
+                <version>0.0.1-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.algo4chris</groupId>
+                <artifactId>algo4chris-dal</artifactId>
+                <version>0.0.1-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.algo4chris</groupId>
+                <artifactId>algo4chris-service</artifactId>
+                <version>0.0.1-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.algo4chris</groupId>
+                <artifactId>algo4chris-web</artifactId>
+                <version>0.0.1-SNAPSHOT</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+</project>

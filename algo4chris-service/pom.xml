@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.algo</groupId>
+        <artifactId>algo4chris</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+    </parent>
+    <groupId>com.algo4chris</groupId>
+    <artifactId>algo4chris-service</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>algo4chris-service</name>
+    <description>algo4chris-service</description>
+    <properties>
+        <java.version>1.8</java.version>
+    </properties>
+    <dependencies>
+        <!-- service 子模块又依赖 dao 子模块 -->
+        <dependency>
+            <groupId>com.algo4chris</groupId>
+            <artifactId>algo4chris-dal</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+    </dependencies>
+
+
+</project>

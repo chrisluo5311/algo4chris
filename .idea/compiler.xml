@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="algo4chris-web" />
+        <module name="algo4chris-service" />
+        <module name="algo4chris-common" />
+        <module name="algo4chris-dal" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="algo4chris" target="1.8" />
+      <module name="algo4chris-common" target="1.8" />
+      <module name="algo4chris-dal" target="1.8" />
+      <module name="algo4chris-service" target="1.8" />
+      <module name="algo4chris-web" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="algo4chris" options="-parameters" />
+      <module name="algo4chris-common" options="-parameters" />
+      <module name="algo4chris-dal" options="-parameters" />
+      <module name="algo4chris-service" options="-parameters" />
+      <module name="algo4chris-web" options="-parameters" />
+    </option>
+  </component>
+</project>

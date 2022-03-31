@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/algo4chris.iml" filepath="$PROJECT_DIR$/algo4chris.iml" />
+      <module fileurl="file://$PROJECT_DIR$/algo4chris-common/algo4chris-common.iml" filepath="$PROJECT_DIR$/algo4chris-common/algo4chris-common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/algo4chris-dal/algo4chris-dal.iml" filepath="$PROJECT_DIR$/algo4chris-dal/algo4chris-dal.iml" />
+      <module fileurl="file://$PROJECT_DIR$/algo4chris-service/algo4chris-service.iml" filepath="$PROJECT_DIR$/algo4chris-service/algo4chris-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/algo4chris-web/algo4chris-web.iml" filepath="$PROJECT_DIR$/algo4chris-web/algo4chris-web.iml" />
+    </modules>
+  </component>
+</project>
