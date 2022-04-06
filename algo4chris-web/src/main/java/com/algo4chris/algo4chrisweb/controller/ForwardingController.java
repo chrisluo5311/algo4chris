@@ -1,11 +1,10 @@
 package com.algo4chris.algo4chrisweb.controller;
 
 import com.algo4chris.algo4chrisdal.session.SessionEntity;
+import com.algo4chris.algo4chrisweb.config.AlgoProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.*;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
@@ -33,10 +32,8 @@ import java.util.stream.Collectors;
 @CrossOrigin
 @Slf4j
 public class ForwardingController {
-    private static final String MGR_API = "/api/mgr";
 
-    @Value("${bestpay.mgr.host}")
-    private String mgrHost;
+    private static final String MGR_API = "/api/mgr";
 
     @Resource
     RestTemplate restTemplate;
@@ -48,14 +45,13 @@ public class ForwardingController {
     @RequestMapping(value = MGR_API + "/**", produces = MediaType.APPLICATION_JSON_VALUE)
     public Object forwardToMgr(HttpServletRequest request,
                                SessionEntity sessionEntity) throws IOException {
-        return forward(request, mgrHost, MGR_API, sessionEntity);
+        return forward(request, AlgoProperties.serviceHost , sessionEntity);
     }
 
     private Object forward(HttpServletRequest request,
                            String host,
-                           String apiPrefix,
                            SessionEntity sessionEntity) throws IOException {
-        String apiUri = request.getRequestURI().substring(apiPrefix.length());
+        String apiUri = request.getRequestURI().substring(ForwardingController.MGR_API.length());
         String queryString = request.getQueryString();
         String url = host + apiUri + (queryString != null ? "?" + queryString : "");
         url = URLDecoder.decode(url, StandardCharsets.UTF_8.name());

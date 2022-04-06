@@ -8,7 +8,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Base64;
 import java.util.Date;
 
 /**
@@ -22,16 +24,28 @@ import java.util.Date;
 public class JwtUtils {
 
     /**
+     * 解密後密鑰
+     * */
+    private String decryptJwtSecret;
+
+    /**
      *  JWT 密鑰
      * */
     @Value("${algo4chris.app.jwtSecret}")
     private String jwtSecret;
 
     /**
-     *  jwt token 超時時間: 一小時
+     *  jwt token 超時時間: 1小時
      * */
     @Value("${algo4chris.app.jwtExpirationMs}")
     private int jwtExpirationMs;
+
+
+    @PostConstruct
+    public void init(){
+        byte[] decode = Base64.getDecoder().decode(jwtSecret);
+        decryptJwtSecret = new String(decode);
+    }
 
 
     /**
@@ -55,17 +69,10 @@ public class JwtUtils {
                    .setSubject(username)
                    .setIssuedAt(new Date())
                    .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))//設expiration
-                   .signWith(SignatureAlgorithm.HS512, jwtSecret)//簽名方式(帶密鑰
+                   .signWith(SignatureAlgorithm.HS512, decryptJwtSecret)//簽名方式(帶密鑰
                    .compact();
     }
 
-//    /**
-//     * return Cookie with null value (used for clean Cookie)
-//     * */
-//    public ResponseCookie getCleanJwtCookie() {
-//        ResponseCookie cookie = ResponseCookie.from(jwtCookie, null).path("/api").build();
-//        return cookie;
-//    }
 
     /**
      * 從 jwt token 中取出用戶名
@@ -74,12 +81,12 @@ public class JwtUtils {
      * @return 用戶名
      * */
     public String getUserNameFromJwtToken(String token) {
-       return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject();
+       return Jwts.parser().setSigningKey(decryptJwtSecret).parseClaimsJws(token).getBody().getSubject();
     }
 
 
     public String getUserNameIgnoredExpired(String token){
-        return Jwts.parser().setSigningKey(jwtSecret).parsePlaintextJws(token).getBody();
+        return Jwts.parser().setSigningKey(decryptJwtSecret).parsePlaintextJws(token).getBody();
     }
 
     /**
@@ -90,7 +97,7 @@ public class JwtUtils {
      * */
     public boolean validateJwtToken(String authToken,HttpServletRequest servletRequest) {
         try {
-            Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
+            Jwts.parser().setSigningKey(decryptJwtSecret).parseClaimsJws(authToken);
             return true;
         } catch (SignatureException e) {
             log.error("無效的 JWT 簽名: {}", e.getMessage());

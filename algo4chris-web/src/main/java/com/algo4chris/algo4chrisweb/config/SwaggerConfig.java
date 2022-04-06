@@ -46,16 +46,9 @@ public class SwaggerConfig extends DefaultSwaggerConfig{
 	private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
         		// 标题
-                .title("JwtDemo Api 文檔")
+                .title("Algo4chris相關文檔")
                 // 描述
-                .description("JwtDemo 文檔<br>" +
-                        "<b>備註：<br>" +
-                        "(1)頁面上的\"文檔管理\"要配置\"全局参数设置\"(为了模擬已登入狀態),配置后<a href=\"#\">重刷頁面</a>即可生效<br></b>" +
-                        "参數名稱:Authorization<br>" +
-                        "参数值:Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJjaHJpcyIsImlhdCI6MTY0MTIwMTAwNywiZXhwIjoxNjQxMjg3NDA3fQ.XAW0kSkw0CWxreJJLNPerHUFQyxYmvIsay7-KmoRCn30MV3SvSh2MtqnerESeZTKn7fIMXVXb3hll_CdzMjB2g<br>" +
-                        "(可以使用<a href=\"#/default/内部测试接口/createSessionUsingGET\">内部测试接口-产生BestPay-Session</a>)<br>" +
-                        "<b><font color=\"red\">(2)生產環境要屏蔽swagger相關資源，要在properties添加以下参数<br></font></b>" +
-                        "knife4j.production=true<br>")
+                .description("Algo4chris相關文檔")
                 // 版本
                 .version("1.0")
                 .contact(new Contact("Chris","https://www.linkedin.com/in/chris-luo-b4b350189/","chrislo5311@gmail.com"))

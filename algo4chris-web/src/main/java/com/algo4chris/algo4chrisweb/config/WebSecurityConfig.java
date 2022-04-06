@@ -5,6 +5,7 @@ import com.algo4chris.algo4chrisweb.security.jwt.AuthEntryPointJWT;
 import com.algo4chris.algo4chrisweb.security.jwt.AuthTokenFilter;
 import com.algo4chris.algo4chrisweb.security.jwt.CustomAccessDeniedHandler;
 import com.algo4chris.algo4chrisweb.security.services.UserDetailsServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,6 +20,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.firewall.HttpFirewall;
+import org.springframework.security.web.firewall.StrictHttpFirewall;
 
 import javax.annotation.Resource;
 
@@ -32,6 +35,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Resource
     private AuthEntryPointJWT authEntryPointJWT;
+
+    @Resource
+    public LogoutHandler logoutHandler;
+
+    @Resource
+    AlgoProperties algoProperties;
 
     @Bean
     public AuthTokenFilter authenticationJwtTokenFilter() {
@@ -60,23 +69,17 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder();
     }
 
+    @Bean
+    public HttpFirewall allowUrlSemicolonHttpFirewall() {
+        StrictHttpFirewall firewall = new StrictHttpFirewall();
+        firewall.setAllowSemicolon(true);//允許含有;的url
+        return firewall;
+    }
 
-    @Resource
-    public LogoutHandler logoutHandler;
 
     @Override
     public void configure(WebSecurity web) throws Exception {
-        web.ignoring().antMatchers("/v2/api-docs",
-                                    "/configuration/ui",
-                                    "/swagger-resources/**",
-                                    "/configuration/security",
-                                    "/swagger-ui.html",
-                                    "/doc.html",
-                                    "/webjars/**",
-                                    "/favicon.ico",
-                                    "/error",
-                                    "/mode-Text.js",
-                                    "/css/**");
+        algoProperties.resourceUrls.forEach(r->web.ignoring().antMatchers(r));
     }
 
     @Override
@@ -99,9 +102,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/service/**").hasAuthority("1")
                 .anyRequest().authenticated()
                 .and()
-                .formLogin().loginPage("/login").defaultSuccessUrl("/loginSuccess")
-                .and()
-                .logout().logoutUrl("/api/auth/userLogout").addLogoutHandler(logoutHandler).logoutSuccessUrl("/index")
+                .logout().logoutUrl("/api/userLogout").addLogoutHandler(logoutHandler).logoutSuccessUrl("/index")
                 .invalidateHttpSession(true);
         //加filter
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
