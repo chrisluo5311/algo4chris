@@ -24,24 +24,39 @@
 
 <script>
     $(document).ready(function () {
-        var userName = $("#userName").val();
-        var userPwd  = $("#password").val();
-        var data = {
-            "userName":userName,
-            "password":userPwd
-        };
-        $("#submitLogin").click(function (e) {
+
+        //domain & api url
+        let httpDomain   = "http://localhost:8080/";
+        let signUpUrl    = "/api/signup";
+        let loginSuccess = "loginSuccess";
+
+        //响应参数
+        let response_success = "0000";
+
+        /**
+         * 註冊用戶
+         *
+         * */
+        $("#submitSignup").click(function (e) {
             e.preventDefault();
+            var userName = $("#userName").val();
+            var email    = $("#email").val();
+            var userPwd  = $("#password").val();
+            var data = {
+                "userName": userName,
+                "email": email,
+                "password": userPwd
+            };
             $.ajax({
                 method:"POST",
-                url:"/api/login",
+                url: signUpUrl,
                 contentType: 'application/json; charset=utf-8',
                 data : JSON.stringify(data),
                 dataType:'JSON',
                 success: function (result) {
                     console.log(result);
-                    if(result.code == "0000"){
-                        window.location.href = ("http://localhost:8090/loginSuccess");
+                    if(result.code === response_success){
+                        window.location.href = (httpDomain + loginSuccess);
                     } else {
                         window.alert(result.message);
                     }
@@ -70,8 +85,13 @@
                         <h3 class="mb-5" style="font-weight: bold">Welcome</h3>
 
                         <div class="form-outline mb-4">
-                            <input type="email" id="userName" class="form-control form-control-lg" />
+                            <input type="text" id="userName" class="form-control form-control-lg" />
                             <label class="form-label" for="userName" style="font-weight: bold;font-size: large">User</label>
+                        </div>
+
+                        <div class="form-outline mb-4">
+                            <input type="email" id="email" class="form-control form-control-lg" />
+                            <label class="form-label" for="email" style="font-weight: bold;font-size: large">Email</label>
                         </div>
 
                         <div class="form-outline mb-4">
@@ -90,14 +110,9 @@
                             <label class="form-check-label" for="form1Example3"> Remember password </label>
                         </div>
 
-                        <button class="btn btn-primary btn-lg btn-block" type="submit" id="submitLogin">Login</button>
+                        <button class="btn btn-primary btn-lg btn-block" type="submit" id="submitSignup">Sign up</button>
 
                         <hr class="my-4">
-
-                        <div class="d-grid gap-2">
-                        <button class="btn btn-lg btn-block btn-primary" style="background-color: #dd4b39;" type="submit"><i class="fab fa-google me-2"></i> Sign in with google  </button>
-                        <button class="btn btn-lg btn-block btn-primary mb-2" style="background-color: #3b5998;" type="submit"><i class="fab fa-facebook-f me-2"></i>Sign in with facebook</button>
-                        </div>
                     </div>
                 </div>
             </div>

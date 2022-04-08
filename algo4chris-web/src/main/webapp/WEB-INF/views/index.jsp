@@ -48,7 +48,8 @@
                 <a class="nav-link active" aria-current="page" href="#">Home</a>
                 <!--        <a class="nav-link" href="#">Features</a>-->
                 <!--        <a class="nav-link" href="#">Contact</a>-->
-                <a class="nav-link" href="<c:url value='/login' />">Sing in</a>
+                <a class="nav-link" href="<c:url value='/login' />">Sign in</a>
+                <a class="nav-link" href="<c:url value='/signup' />">Sign up</a>
             </nav>
         </div>
     </header>
@@ -56,7 +57,7 @@
     <main class="px-3">
         <!--    <h1>Cover your page.</h1>-->
         <!--    <p class="lead">Cover is a one-page template for building simple and beautiful home pages. Download, edit the text, and add your own fullscreen background photo to make it your own.</p>-->
-        <a href="#" class="btn btn-lg btn-secondary fw-bold border-white bg-white">Learn more</a>
+        <a class="btn btn-lg btn-secondary fw-bold border-white bg-white" href="https://www.google.com/">Learn more</a>
         </p>
     </main>
 

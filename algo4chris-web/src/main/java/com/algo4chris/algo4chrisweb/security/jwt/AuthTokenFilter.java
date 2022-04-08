@@ -1,17 +1,26 @@
 package com.algo4chris.algo4chrisweb.security.jwt;
 
 
+import com.algo4chris.algo4chriscommon.common.constant.HttpExceptionConst;
 import com.algo4chris.algo4chriscommon.common.constant.JwtConstants;
+import com.algo4chris.algo4chriscommon.utils.RandomUtil;
 import com.algo4chris.algo4chrisdal.session.SessionEntity;
 import com.algo4chris.algo4chriscommon.exception.responsecode.MgrResponseCode;
 import com.algo4chris.algo4chriscommon.exception.user.UserJwtException;
+import com.algo4chris.algo4chrisweb.advice.annotations.HttpRequestElements;
+import com.algo4chris.algo4chrisweb.security.services.RateLimitService;
 import com.algo4chris.algo4chrisweb.security.services.UserDetailsImpl;
 import com.algo4chris.algo4chrisweb.security.services.UserDetailsServiceImpl;
 import com.algo4chris.algo4chriscommon.utils.IpUtils;
 import com.algo4chris.algo4chriscommon.utils.SessionUtils;
+import io.github.bucket4j.Bucket;
+import io.github.bucket4j.ConsumptionProbe;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -41,6 +50,9 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     SessionUtils sessionUtils;
 
     @Resource
+    RateLimitService rateLimitService;
+
+    @Resource
     private UserDetailsServiceImpl userDetailsService;
 
     @Resource
@@ -50,15 +62,25 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-
+        MDC.put("ramCode", "ramCode:"+ RandomUtil.getRandom(10));
         String ip = IpUtils.getIpAddr(request);
-        log.info("從 ip {}:發送請求uri: {}",ip, request.getRequestURI());
+        log.info("【ip】:{} 【Request Method】:{} 【URI】: {}?{}",ip,request.getMethod(), request.getRequestURI(), request.getQueryString());
+//        HttpRequestElements.printGetMethodLog(request);
 
+        Bucket bucket = rateLimitService.getBucket(ip);
         try{
+            ConsumptionProbe probe = bucket.tryConsumeAndReturnRemaining(1);
+            if (!probe.isConsumed()) {
+                long waitForRefill = probe.getNanosToWaitForRefill() / 1_000_000_000; //單位納秒(1000,000,000 納秒 = 1 秒)
+                log.error("【ip】:{} 每秒請求次數超過限制  剩餘:{} 秒回充請求次數 ",ip,waitForRefill);
+                request.setAttribute(HttpExceptionConst.API_OUT_OF_LIMIT, HttpStatus.TOO_MANY_REQUESTS);
+                throw new BadCredentialsException(MgrResponseCode.TOO_MANY_REQUESTS.getMessage());
+            }
             //取 JWT
             String jwt = jwtUtils.parseJwt(request);
-            if( jwt!=null){
+            if(jwt != null){
                 String userName = jwtUtils.getUserNameFromJwtToken(jwt);
+                MDC.put("userName", "userName:"+ userName);
                 //查看 redis 登出黑名單
                 if(Boolean.TRUE.equals(redisTemplate.hasKey(jwt))){
                     throw new UserJwtException(MgrResponseCode.USER_ALREADY_LOGOUT,new Object[]{userName});
@@ -72,6 +94,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                     SessionEntity sessionEntity = SessionEntity.builder()
                                                                .userId(userDetails1.getId())
                                                                .userName(userName)
+                                                               .email(userDetails1.getEmail())
                                                                .ip(ip)
                                                                .build();
                     //request header中設置session
@@ -79,11 +102,12 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                 }
             }
         } catch (ExpiredJwtException e) {
-            request.setAttribute(JwtConstants.JWT_EXPIRED_CODE_KEY ,e.getMessage());
+            request.setAttribute(HttpExceptionConst.JWT_EXPIRED_CODE_KEY ,e.getMessage());
         } catch (Exception e){
-            log.error("無法設置用戶權限: {}",e);
+            log.error("AuthTokenFilter 发生Exception原因: {}",e.getMessage());
         }
         filterChain.doFilter(request, response);
+        MDC.clear();
     }
 
 }

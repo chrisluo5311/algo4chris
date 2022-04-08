@@ -50,7 +50,7 @@ public class SessionTestController {
         if(isProd) {
             return "無操作權限";
         }
-        User user = userRepository.findByUsername(userName)
+        User user = userRepository.findByUserName(userName)
                 .orElseThrow(() -> new UserException(MgrResponseCode.USER_NOT_FOUND,new Object[]{userName}));
         SessionEntity sessionEntity = SessionEntity.builder().userId(user.getId()).userName(userName).build();
         String writeValueAsString = objectMapper.writeValueAsString(sessionEntity);

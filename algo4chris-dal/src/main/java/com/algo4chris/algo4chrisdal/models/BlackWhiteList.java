@@ -8,22 +8,26 @@ import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
 
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true)
 @Component
 @Entity
-@Table(name = "roles")
-public class Role {
+@Table(name = "blackwhitelist")
+public class BlackWhiteList {
 
     @Id
-    @Column(name = "id")
+    @Column(name="id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "name",length = 20)
-    private ERole name;
+    /** ip */
+    @Column(name="ip")
+    private String ip;
+
+    /** 1:白名單 -1:黑名單 */
+    @Column(name="type")
+    private int type;
+
 }

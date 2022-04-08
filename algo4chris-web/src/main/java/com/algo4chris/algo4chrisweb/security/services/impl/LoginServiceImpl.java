@@ -126,9 +126,9 @@ public class LoginServiceImpl implements LoginService {
     public User signUp(SignupRequest signUpRequest, HttpServletRequest servletRequest) {
         String ip       = IpUtils.getIpAddr(servletRequest);
         String email    = signUpRequest.getEmail();
-        String userName = signUpRequest.getUsername();
+        String userName = signUpRequest.getUserName();
         log.info("{} 新用戶:{} 註冊帳號", LOG_PREFIX, userName);
-        if (userRepository.existsByUsername(userName)) {
+        if (userRepository.existsByUserName(userName)) {
             throw new UserException(MgrResponseCode.USER_ALREADY_EXISTS, new Object[]{userName});
         }
 
@@ -138,8 +138,8 @@ public class LoginServiceImpl implements LoginService {
 
         //創建用戶 狀態:預設 1:啟用
         User user = User.builder()
-                        .username(signUpRequest.getUsername())
-                        .email(signUpRequest.getEmail())
+                        .userName(userName)
+                        .email(email)
                         .password(encoder.encode(signUpRequest.getPassword()))
                         .ip(ip)
                         .status(UserStatus.ENABLE.getCode())
@@ -147,34 +147,39 @@ public class LoginServiceImpl implements LoginService {
                         .build();
         //取得註冊腳色
         Set<Integer> intRoles = signUpRequest.getRole();
-        //未輸入權限一律預設為一般使用者
-        Set<Role> roles = new HashSet<>(Optional.of(intRoles.stream().map(r -> {
-                    switch (r) {
-                        case RoleConstants.ROLE_ADMIN_INT:
-                            Role adminRole = roleRepository.findById(ERole.ROLE_ADMIN.getRoleId())
-                                    .orElseThrow(() -> new UserException(MgrResponseCode.ROLE_NOT_FOUND, new Object[]{ERole.ROLE_ADMIN}));
-                            return adminRole;
-                        case RoleConstants.ROLE_SELLER_INT:
-                            Role modRole = roleRepository.findById(ERole.ROLE_SELLER.getRoleId())
-                                    .orElseThrow(() -> new UserException(MgrResponseCode.ROLE_NOT_FOUND, new Object[]{ERole.ROLE_SELLER}));
-                            return modRole;
-                        default:
-                            Role userRole = roleRepository.findById(ERole.ROLE_USER.getRoleId())
-                                    .orElseThrow(() -> new UserException(MgrResponseCode.ROLE_NOT_FOUND, new Object[]{ERole.ROLE_USER}));
-                            return userRole;
-                    }
-                }).collect(Collectors.toSet()))
-                .orElseGet(() -> {
-                    Set<Role> roles2 = new HashSet<>();
-                    Role userRole = roleRepository.findById(ERole.ROLE_USER.getRoleId())
-                            .orElseThrow(() -> new UserException(MgrResponseCode.ROLE_NOT_FOUND, new Object[]{ERole.ROLE_USER}));
-                    roles2.add(userRole);
-                    return roles2;
-                }));
+        Set<Role> userRoles = new HashSet<>();
+        //为 null 预设USER
+        if(Objects.isNull(intRoles)){
+            roleRepository.findById(ERole.ROLE_USER.getRoleId())
+                    .map(userRoles::add)
+                    .orElseThrow(() ->
+                            new UserException(MgrResponseCode.ROLE_NOT_FOUND, new Object[]{ERole.ROLE_USER}));
+        } else {
+            //未知權限一律預設為一般使用者
+            intRoles.forEach(r -> {
+                switch (r) {
+                    case RoleConstants.ROLE_ADMIN_INT:
+                        roleRepository.findById(ERole.ROLE_ADMIN.getRoleId())
+                                .map(userRoles::add)
+                                .orElseThrow(() ->
+                                        new UserException(MgrResponseCode.ROLE_NOT_FOUND, new Object[]{ERole.ROLE_ADMIN}));
+                    case RoleConstants.ROLE_SELLER_INT:
+                        roleRepository.findById(ERole.ROLE_SELLER.getRoleId())
+                                .map(userRoles::add)
+                                .orElseThrow(() ->
+                                        new UserException(MgrResponseCode.ROLE_NOT_FOUND, new Object[]{ERole.ROLE_SELLER}));
+                    default:
+                        roleRepository.findById(ERole.ROLE_USER.getRoleId())
+                                .map(userRoles::add)
+                                .orElseThrow(() ->
+                                        new UserException(MgrResponseCode.ROLE_NOT_FOUND, new Object[]{ERole.ROLE_USER}));
+                }
+            });
+        }
 
-        user.setRoles(roles);
+        user.setRoles(userRoles);
         User userResult = userRepository.save(user);
-        log.info("{} 新用戶:{} 註冊成功", LOG_PREFIX, userResult.getUsername());
+        log.info("{} 新用戶:{} 註冊成功", LOG_PREFIX, userResult.getUserName());
         return userResult;
     }
 
@@ -192,7 +197,7 @@ public class LoginServiceImpl implements LoginService {
                 .map(refreshTokenService::verifyExpiration)
                 .map(RefreshToken::getUser)
                 .map(user -> {
-                    String token = jwtUtils.generateTokenFromUsername(user.getUsername());
+                    String token = jwtUtils.generateTokenFromUsername(user.getUserName());
                     return new TokenRefreshResponse(token, requestRefreshToken);
                 })
                 .orElseThrow(() -> new TokenRefreshException(MgrResponseCode.REFRESH_TOKEN_NOT_EXISTS_IN_DB, requestRefreshToken));
@@ -212,7 +217,7 @@ public class LoginServiceImpl implements LoginService {
         refreshTokenService.deleteByUserId(user);
         String jwtToken = jwtUtils.parseJwt(servletRequest);
         redisTemplate.opsForValue().set(jwtToken, jwtToken, JwtConstants.LOGOUT_EXPIRATION_TIME, TimeUnit.HOURS);
-        log.info("{} 用戶:{} 登出裝置成功", LOG_PREFIX, user.getUsername());
+        log.info("{} 用戶:{} 登出裝置成功", LOG_PREFIX, user.getUserName());
     }
 
 

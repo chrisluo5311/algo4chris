@@ -5,16 +5,15 @@ import com.algo4chris.algo4chrisweb.security.jwt.AuthEntryPointJWT;
 import com.algo4chris.algo4chrisweb.security.jwt.AuthTokenFilter;
 import com.algo4chris.algo4chrisweb.security.jwt.CustomAccessDeniedHandler;
 import com.algo4chris.algo4chrisweb.security.services.UserDetailsServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -34,10 +33,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     UserDetailsServiceImpl userDetailsService;
 
     @Resource
-    private AuthEntryPointJWT authEntryPointJWT;
+    AuthEntryPointJWT authEntryPointJWT;
 
     @Resource
-    public LogoutHandler logoutHandler;
+    LogoutHandler logoutHandler;
 
     @Resource
     AlgoProperties algoProperties;
@@ -76,34 +75,27 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return firewall;
     }
 
-
-    @Override
-    public void configure(WebSecurity web) throws Exception {
-        algoProperties.resourceUrls.forEach(r->web.ignoring().antMatchers(r));
-    }
-
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.cors().and().csrf().disable()
+        ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry registry = http
+                .authorizeRequests();
+        //不需保護的路徑訪問
+        algoProperties.apiIgnoredUrls.forEach(a-> registry.antMatchers(a).permitAll());
+        algoProperties.resourceUrls.forEach(r->registry.antMatchers(r).permitAll());
+
+        registry.and().cors().and().csrf().disable()
                 .exceptionHandling()
                 .authenticationEntryPoint(authEntryPointJWT)
                 .accessDeniedHandler(accessDeniedHandler())
                 .and()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                .authorizeRequests()//定義哪些url需要被保護
-                .antMatchers("/login",
-                        "/index",
-                        "/api/**",
-                        "/tg/receive",
-                        "/inner/**",
-                        "/websocket/**")
-                .permitAll()
+                .authorizeRequests()
                 .antMatchers("/api/service/**").hasAuthority("1")
                 .anyRequest().authenticated()
                 .and()
                 .logout().logoutUrl("/api/userLogout").addLogoutHandler(logoutHandler).logoutSuccessUrl("/index")
-                .invalidateHttpSession(true);
+                .invalidateHttpSession(true)
+                .and()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         //加filter
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
     }

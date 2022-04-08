@@ -29,21 +29,25 @@ import java.util.Set;
 public class User {
 
     @Id
+    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotNull
     @Size(max = 20)
-    private String username;
+    @Column(name = "userName")
+    private String userName;
 
     @NotNull
     @Size(max = 50)
     @Email
+    @Column(name = "email")
     private String email;
 
     @JsonIgnore
     @NotNull
     @Size(max = 120)
+    @Column(name = "password")
     private String password;
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -52,12 +56,16 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
 
+    @Column(name = "status")
     private Integer status;
 
+    @Column(name = "ip")
     private String ip;
 
+    @Column(name = "create_time")
     private Date createTime;
 
+    @Column(name = "update_time")
     private Date updateTime;
 
 

@@ -77,22 +77,6 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 處理拒絕存取異常
-     *
-     * @param e AccessDeniedException
-     * @return MgrResponseDto
-     * */
-    @ExceptionHandler(AccessDeniedException.class)
-    public MgrResponseDto errorHandler(AccessDeniedException e) {
-        e.printStackTrace();
-
-        MgrResponseDto dto = new MgrResponseDto();
-        dto.setCode(MgrResponseCode.REQUEST_ACCESS_DENIED);
-        dto.setMessage(MgrResponseCode.REQUEST_ACCESS_DENIED.getMessage());
-        return dto;
-    }
-
-    /**
      * 處理校驗valid異常
      *
      * @param e MethodArgumentNotValidException

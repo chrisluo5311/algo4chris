@@ -1,11 +1,11 @@
 package com.algo4chris.algo4chrisweb.security.jwt;
 
+import com.algo4chris.algo4chriscommon.common.constant.HttpExceptionConst;
 import com.algo4chris.algo4chriscommon.common.constant.JwtConstants;
 import com.algo4chris.algo4chrisweb.security.services.UserDetailsImpl;
 import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -105,7 +105,7 @@ public class JwtUtils {
             log.error("無效的 JWT token: {}", e.getMessage());
         } catch (ExpiredJwtException e) {
             log.error("JWT token 超時: {}", e.getMessage());
-            servletRequest.setAttribute(JwtConstants.JWT_EXPIRED_CODE_KEY ,e.getMessage());
+            servletRequest.setAttribute(HttpExceptionConst.JWT_EXPIRED_CODE_KEY ,e.getMessage());
         } catch (UnsupportedJwtException e) {
             log.error("JWT token 不支持: {}", e.getMessage());
         } catch (IllegalArgumentException e) {

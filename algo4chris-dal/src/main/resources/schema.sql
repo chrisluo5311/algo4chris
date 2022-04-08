@@ -82,5 +82,32 @@ CREATE TABLE IF NOT EXISTS public.refreshtoken
 
     TABLESPACE pg_default;
 
+-- Table: public.blackwhitelist
+-- DROP TABLE IF EXISTS public.blackwhitelist;
+CREATE SEQUENCE IF NOT EXISTS public.blackwhitelist_id_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+CREATE TABLE IF NOT EXISTS public.blackwhitelist
+(
+    id bigint NOT NULL,
+    ip character varying(18) COLLATE pg_catalog."default" NOT NULL,
+    type smallint,
+    CONSTRAINT blackwhitelist_pkey PRIMARY KEY (id)
+    )
 
+    TABLESPACE pg_default;
+
+COMMENT ON TABLE public.blackwhitelist
+    IS '黑白名單';
+-- Index: bw_index_01
+-- DROP INDEX IF EXISTS public.bw_index_01;
+CREATE INDEX IF NOT EXISTS bw_index_01
+    ON public.blackwhitelist USING btree
+    (type ASC NULLS LAST)
+    TABLESPACE pg_default;
+
+alter table public.blackwhitelist alter column id set DEFAULT nextval('blackwhitelist_id_seq'::regclass);
 

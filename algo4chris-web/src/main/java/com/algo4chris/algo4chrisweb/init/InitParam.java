@@ -29,7 +29,7 @@ public class InitParam implements CommandLineRunner {
 //        log.info("[正式]swagger文檔地址: [Doc](https://jwtdemo4chris.herokuapp.com/doc.html)");
 //        log.info("[正式]Heroku地址: https://jwtdemo4chris.herokuapp.com/)");
         log.info("system.version:{}",AlgoProperties.version);
-        log.info("system.resourceUrls:{}",algoProperties.resourceUrls);
+//        log.info("system.resourceUrls:{}",algoProperties.resourceUrls);
 //        log.info("system.apiIgnoredUrls:{}",algoProperties.apiIgnoredUrls);
     }
 }

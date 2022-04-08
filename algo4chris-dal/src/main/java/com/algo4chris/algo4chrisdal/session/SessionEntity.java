@@ -19,6 +19,8 @@ public class SessionEntity {
     protected String userName;
     /** 用户id */
     protected Long userId;
+    /** email */
+    protected String email;
     /** 用户頭貼 */
     protected String avatar;
     /** 用户ip */

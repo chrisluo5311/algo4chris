@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Set;
 
@@ -21,12 +22,12 @@ import java.util.Set;
 public class SignupRequest {
 
     @ApiModelProperty(value = "用戶名",example = "chris")
-    @NotBlank
+    @NotNull
     @Size(min = 3, max = 20)
-    private String username;
+    private String userName;
 
     @ApiModelProperty(value = "EMAIL")
-    @NotBlank
+    @NotNull
     @Size(max = 50)
     @Email
     private String email;
@@ -35,7 +36,7 @@ public class SignupRequest {
     private Set<Integer> role;
 
     @ApiModelProperty(value = "密碼")
-    @NotBlank
+    @NotNull
     @Size(min = 6, max = 40)
     private String password;
 
