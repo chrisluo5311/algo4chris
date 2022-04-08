@@ -1,4 +1,4 @@
-package com.algo4chris.algo4chrisweb.payLoad.response;
+package com.algo4chris.algo4chrisweb.payload.response;
 
 import com.algo4chris.algo4chrisweb.security.services.UserDetailsImpl;
 import lombok.AllArgsConstructor;

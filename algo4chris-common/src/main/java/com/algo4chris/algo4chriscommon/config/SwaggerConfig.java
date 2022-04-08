@@ -1,4 +1,4 @@
-package com.algo4chris.algo4chrisweb.config;
+package com.algo4chris.algo4chriscommon.config;
 
 import com.fasterxml.classmate.TypeResolver;
 import com.github.xiaoymin.knife4j.spring.annotations.EnableKnife4j;

@@ -1,4 +1,4 @@
-package com.algo4chris.algo4chrisweb.testargsprovider;
+package com.algo4chris.algo4chrisweb.argsprovider_test;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.provider.Arguments;

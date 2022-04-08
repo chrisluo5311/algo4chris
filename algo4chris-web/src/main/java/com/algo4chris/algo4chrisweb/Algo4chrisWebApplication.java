@@ -7,13 +7,14 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.context.annotation.PropertySource;
 
 /**
- * swagger文檔地址: http://localhost:8080/doc.html
- * 首頁地址: http://localhost:8080/
+ * swagger文檔地址: http://localhost:8080/doc.html<br>
+ * 首頁地址: http://localhost:8080/<br>
  *
  * */
 @ConfigurationPropertiesScan
 @PropertySource("classpath:system-${spring.profiles.active}.properties")
-@SpringBootApplication(scanBasePackages = {"com.algo4chris.algo4chrisweb","com.algo4chris.algo4chriscommon"},exclude = {SecurityAutoConfiguration.class})
+@SpringBootApplication(scanBasePackages = {"com.algo4chris.algo4chrisweb","com.algo4chris.algo4chriscommon"},
+                       exclude = {SecurityAutoConfiguration.class})
 public class Algo4chrisWebApplication {
 
     public static void main(String[] args) {

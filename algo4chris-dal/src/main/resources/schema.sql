@@ -31,14 +31,14 @@ CREATE TABLE IF NOT EXISTS public.users
     id bigint NOT NULL,
     email character varying(50) COLLATE pg_catalog."default",
     password character varying(120) COLLATE pg_catalog."default",
-    username character varying(20) COLLATE pg_catalog."default",
+    userName character varying(20) COLLATE pg_catalog."default",
     create_time timestamp without time zone,
     ip character varying(255) COLLATE pg_catalog."default",
     status integer,
     update_time timestamp without time zone,
     CONSTRAINT users_pkey PRIMARY KEY (id),
     CONSTRAINT uk6dotkott2kjsp8vw4d0m25fb7 UNIQUE (email),
-    CONSTRAINT ukr43af9ap4edm43mmtq01oddj6 UNIQUE (username)
+    CONSTRAINT ukr43af9ap4edm43mmtq01oddj6 UNIQUE (userName)
     )
 
     TABLESPACE pg_default;

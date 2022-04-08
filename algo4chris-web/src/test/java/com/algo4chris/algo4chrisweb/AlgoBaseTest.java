@@ -15,6 +15,7 @@ import javax.annotation.Resource;
 /**
  * 逻辑层
  *
+ * @author chris
  * */
 @Slf4j
 public abstract class AlgoBaseTest extends AlgoTestUtil {
@@ -44,7 +45,7 @@ public abstract class AlgoBaseTest extends AlgoTestUtil {
     }
 
     /**
-     * 制作Headers
+     * 产生 Headers
      * */
     public String getHeaders(){
         SessionEntity sessionEntity = new SessionEntity();

@@ -1,4 +1,4 @@
-package com.algo4chris.algo4chrisweb.payLoad.request;
+package com.algo4chris.algo4chrisweb.payload.request;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

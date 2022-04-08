@@ -1,4 +1,4 @@
-package com.algo4chris.algo4chrisweb.propertiestest;
+package com.algo4chris.algo4chrisweb.properties_test;
 
 import com.algo4chris.algo4chrisweb.AlgoBaseTest;
 import com.algo4chris.algo4chrisweb.config.AlgoProperties;
@@ -8,8 +8,6 @@ import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import javax.annotation.Resource;
 
 /**
  * Properties Test測試類<br>

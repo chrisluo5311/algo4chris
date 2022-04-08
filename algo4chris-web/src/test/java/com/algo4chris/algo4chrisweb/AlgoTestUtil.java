@@ -11,12 +11,11 @@ import java.util.Base64;
 /**
  * 工具層
  *
+ * @author chris
  * */
 public abstract class AlgoTestUtil {
 
     protected static final String BestPay_Session = "BestPay-Session";
-
-
 
     @Resource
     protected ObjectMapper objectMapper;

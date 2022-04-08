@@ -1,7 +1,7 @@
 package com.algo4chris.algo4chrisweb.junit5util;
 
 import com.algo4chris.algo4chrisweb.AlgoBaseTest;
-import com.algo4chris.algo4chrisweb.testargsprovider.AlgoTestArgsProvider;
+import com.algo4chris.algo4chrisweb.argsprovider_test.AlgoTestArgsProvider;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;

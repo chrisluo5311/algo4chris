@@ -1,20 +1,16 @@
-package com.algo4chris.algo4chrisweb.encodetest;
+package com.algo4chris.algo4chrisweb.encode_test;
 
 import com.algo4chris.algo4chrisweb.AlgoBaseTest;
-import com.fasterxml.jackson.databind.ser.Serializers;
-import io.netty.handler.codec.base64.Base64Decoder;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.Base64;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Base64 Encode Test測試類<br>

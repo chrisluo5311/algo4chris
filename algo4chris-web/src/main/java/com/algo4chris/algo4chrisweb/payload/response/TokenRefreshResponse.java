@@ -1,4 +1,4 @@
-package com.algo4chris.algo4chrisweb.payLoad.response;
+package com.algo4chris.algo4chrisweb.payload.response;
 
 import lombok.Getter;
 import lombok.Setter;

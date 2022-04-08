@@ -3,11 +3,11 @@ package com.algo4chris.algo4chrisweb.security.services;
 
 import com.algo4chris.algo4chrisdal.models.User;
 import com.algo4chris.algo4chrisdal.session.SessionEntity;
-import com.algo4chris.algo4chrisweb.payLoad.request.LoginRequest;
-import com.algo4chris.algo4chrisweb.payLoad.request.SignupRequest;
-import com.algo4chris.algo4chrisweb.payLoad.request.TokenRefreshRequest;
-import com.algo4chris.algo4chrisweb.payLoad.response.JwtResponse;
-import com.algo4chris.algo4chrisweb.payLoad.response.TokenRefreshResponse;
+import com.algo4chris.algo4chrisweb.payload.request.LoginRequest;
+import com.algo4chris.algo4chrisweb.payload.request.SignupRequest;
+import com.algo4chris.algo4chrisweb.payload.request.TokenRefreshRequest;
+import com.algo4chris.algo4chrisweb.payload.response.JwtResponse;
+import com.algo4chris.algo4chrisweb.payload.response.TokenRefreshResponse;
 import javax.servlet.http.HttpServletRequest;
 
 /**

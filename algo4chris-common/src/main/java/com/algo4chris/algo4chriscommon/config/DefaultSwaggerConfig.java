@@ -1,4 +1,4 @@
-package com.algo4chris.algo4chrisweb.config;
+package com.algo4chris.algo4chriscommon.config;
 
 import lombok.extern.slf4j.Slf4j;
 import springfox.documentation.spi.DocumentationType;

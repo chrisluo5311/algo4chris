@@ -1,28 +1,26 @@
 package com.algo4chris.algo4chrisweb.controller;
 
 import com.algo4chris.algo4chriscommon.common.constant.JwtConstants;
-import com.algo4chris.algo4chriscommon.common.constant.RoleConstants;
 import com.algo4chris.algo4chriscommon.common.response.MgrResponseDto;
+import com.algo4chris.algo4chrisweb.payload.request.LoginRequest;
+import com.algo4chris.algo4chrisweb.payload.request.SignupRequest;
+import com.algo4chris.algo4chrisweb.payload.request.TokenRefreshRequest;
+import com.algo4chris.algo4chrisweb.payload.response.JwtResponse;
+import com.algo4chris.algo4chrisweb.payload.response.TokenRefreshResponse;
 import com.algo4chris.algo4chrisdal.models.User;
-import com.algo4chris.algo4chrisweb.payLoad.request.LoginRequest;
-import com.algo4chris.algo4chrisweb.payLoad.request.SignupRequest;
-import com.algo4chris.algo4chrisweb.payLoad.request.TokenRefreshRequest;
-import com.algo4chris.algo4chrisweb.payLoad.response.JwtResponse;
-import com.algo4chris.algo4chrisweb.payLoad.response.TokenRefreshResponse;
 import com.algo4chris.algo4chrisweb.security.services.LoginService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
 
 /**
  * 登入/登出/註冊類
