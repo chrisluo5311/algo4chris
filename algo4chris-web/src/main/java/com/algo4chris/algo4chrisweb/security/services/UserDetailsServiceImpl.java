@@ -1,6 +1,6 @@
 package com.algo4chris.algo4chrisweb.security.services;
 
-import com.algo4chris.algo4chrisdal.models.User;
+import com.algo4chris.algo4chrisdal.models.Member;
 import com.algo4chris.algo4chrisdal.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -16,7 +16,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUserName(username).orElseThrow(()-> new UsernameNotFoundException("查無用戶:"+ username));
-        return UserDetailsImpl.build(user);
+        Member member = userRepository.findByMemberName(username).orElseThrow(()-> new UsernameNotFoundException("查無用戶:"+ username));
+        return UserDetailsImpl.build(member);
     }
 }

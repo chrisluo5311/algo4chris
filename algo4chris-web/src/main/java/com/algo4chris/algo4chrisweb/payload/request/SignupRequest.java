@@ -23,7 +23,7 @@ public class SignupRequest {
     @ApiModelProperty(value = "用戶名",example = "chris")
     @NotNull
     @Size(min = 3, max = 20)
-    private String userName;
+    private String memberName;
 
     @ApiModelProperty(value = "EMAIL")
     @NotNull

@@ -7,7 +7,7 @@ import com.algo4chris.algo4chrisweb.payload.request.SignupRequest;
 import com.algo4chris.algo4chrisweb.payload.request.TokenRefreshRequest;
 import com.algo4chris.algo4chrisweb.payload.response.JwtResponse;
 import com.algo4chris.algo4chrisweb.payload.response.TokenRefreshResponse;
-import com.algo4chris.algo4chrisdal.models.User;
+import com.algo4chris.algo4chrisdal.models.Member;
 import com.algo4chris.algo4chrisweb.security.services.LoginService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -49,10 +49,10 @@ public class LoginController {
 
     @ApiOperation(value = "用户註冊", httpMethod = "POST")
     @RequestMapping(value = "/signup",method = RequestMethod.POST)
-    public MgrResponseDto<User> registerUser(@Valid @RequestBody SignupRequest signUpRequest,
-                                             HttpServletRequest servletRequest) {
-        User user = loginService.signUp(signUpRequest,servletRequest);
-        return MgrResponseDto.success(user);
+    public MgrResponseDto<Member> registerUser(@Valid @RequestBody SignupRequest signUpRequest,
+                                               HttpServletRequest servletRequest) {
+        Member member = loginService.signUp(signUpRequest,servletRequest);
+        return MgrResponseDto.success(member);
     }
 
     @ApiOperation(value = "獲得新的Token",httpMethod = "POST")

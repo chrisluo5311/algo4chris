@@ -19,7 +19,7 @@ public class LoginRequest {
 
     @ApiModelProperty(value = "用戶名",example = "chris")
     @NotNull(message = "請填寫用戶名")
-    private String userName;
+    private String memberName;
 
     @ApiModelProperty(value = "密碼")
     @NotNull(message = "請填寫密碼")

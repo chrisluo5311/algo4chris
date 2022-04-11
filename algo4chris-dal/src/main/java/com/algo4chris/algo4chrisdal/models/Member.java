@@ -21,12 +21,12 @@ import java.util.Set;
 @Builder(toBuilder = true)
 @Component
 @Entity
-@Table(name = "users",
+@Table(name = "member",
         uniqueConstraints = {
-                @UniqueConstraint(columnNames = "userName"),
+                @UniqueConstraint(columnNames = "membername"),
                 @UniqueConstraint(columnNames = "email")
         })
-public class User {
+public class Member {
 
     @Id
     @Column(name = "id")
@@ -35,8 +35,8 @@ public class User {
 
     @NotNull
     @Size(max = 20)
-    @Column(name = "userName")
-    private String userName;
+    @Column(name = "membername")
+    private String memberName;
 
     @NotNull
     @Size(max = 50)
@@ -51,8 +51,8 @@ public class User {
     private String password;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "user_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
+    @JoinTable(name = "member_roles",
+            joinColumns = @JoinColumn(name = "member_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
 

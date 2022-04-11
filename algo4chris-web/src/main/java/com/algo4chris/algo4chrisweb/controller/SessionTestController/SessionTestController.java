@@ -3,7 +3,7 @@ package com.algo4chris.algo4chrisweb.controller.SessionTestController;
 import com.algo4chris.algo4chriscommon.common.constant.InnerRouteConst;
 import com.algo4chris.algo4chriscommon.exception.responsecode.MgrResponseCode;
 import com.algo4chris.algo4chriscommon.exception.user.UserException;
-import com.algo4chris.algo4chrisdal.models.User;
+import com.algo4chris.algo4chrisdal.models.Member;
 import com.algo4chris.algo4chrisdal.repository.UserRepository;
 import com.algo4chris.algo4chrisdal.session.SessionEntity;
 import com.algo4chris.algo4chrisweb.security.jwt.JwtUtils;
@@ -50,9 +50,9 @@ public class SessionTestController {
         if(isProd) {
             return "無操作權限";
         }
-        User user = userRepository.findByUserName(userName)
+        Member member = userRepository.findByMemberName(userName)
                 .orElseThrow(() -> new UserException(MgrResponseCode.USER_NOT_FOUND,new Object[]{userName}));
-        SessionEntity sessionEntity = SessionEntity.builder().userId(user.getId()).userName(userName).build();
+        SessionEntity sessionEntity = SessionEntity.builder().userId(member.getId()).userName(userName).build();
         String writeValueAsString = objectMapper.writeValueAsString(sessionEntity);
         byte[] encode = Base64.getEncoder().encode(writeValueAsString.getBytes());
         return new String(encode);

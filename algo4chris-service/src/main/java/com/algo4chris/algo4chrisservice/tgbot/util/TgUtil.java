@@ -1,8 +1,8 @@
 package com.algo4chris.algo4chrisservice.tgbot.util;
 
 import com.algo4chris.algo4chriscommon.common.response.MgrResponseDto;
+import com.algo4chris.algo4chrisdal.models.Member;
 import com.algo4chris.algo4chrisservice.tgbot.enums.TelegramInfo;
-import com.algo4chris.algo4chrisdal.models.User;
 import com.algo4chris.algo4chrisdal.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -35,8 +35,8 @@ public class TgUtil {
     public void commandInstruct(String message){
         switch (message){
             case "查詢用戶資訊":
-                List<User> userList = userRepository.findAll();
-                sendMessage(MgrResponseDto.success(userList));
+                List<Member> memberList = userRepository.findAll();
+                sendMessage(MgrResponseDto.success(memberList));
                 break;
             default:
                 sendMessage(message);

@@ -7,10 +7,10 @@ import com.algo4chris.algo4chriscommon.exception.tokenrefresh.TokenRefreshExcept
 import com.algo4chris.algo4chriscommon.exception.user.UserException;
 import com.algo4chris.algo4chriscommon.utils.IpUtils;
 import com.algo4chris.algo4chrisdal.models.ERole;
+import com.algo4chris.algo4chrisdal.models.Member;
 import com.algo4chris.algo4chrisdal.models.RefreshToken;
 import com.algo4chris.algo4chrisdal.models.Role;
-import com.algo4chris.algo4chrisdal.models.User;
-import com.algo4chris.algo4chrisdal.models.enums.UserStatus;
+import com.algo4chris.algo4chrisdal.models.enums.MemberStatus;
 import com.algo4chris.algo4chrisdal.repository.RoleRepository;
 import com.algo4chris.algo4chrisdal.repository.UserRepository;
 import com.algo4chris.algo4chrisdal.session.SessionEntity;
@@ -30,6 +30,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -84,19 +85,19 @@ public class LoginServiceImpl implements LoginService {
      * */
     @Override
     public JwtResponse loginMember(LoginRequest loginRequest) {
-        String userName = loginRequest.getUserName();
-        String password = loginRequest.getPassword();
-        log.info("{} 用戶:{} 發送登入請求", LOG_PREFIX, userName);
+        String memberName = loginRequest.getMemberName();
+        String password   = loginRequest.getPassword();
+        log.info("{} 用戶:{} 發送登入請求", LOG_PREFIX, memberName);
         //驗證 用戶名與密碼
         Authentication authentication = null;
         try {
-            authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userName, password));
+            authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(memberName, password));
         } catch (DisabledException e) {
-            log.error("用戶名:{}登入失败 USER_DISABLED : {}", userName, e.getMessage());
-            throw new UserException(MgrResponseCode.USER_NOT_FOUND, new Object[]{userName});
+            log.error("用戶名:{}登入失败 USER_DISABLED : {}", memberName, e.getMessage());
+            throw new UserException(MgrResponseCode.USER_NOT_FOUND, new Object[]{memberName});
         } catch (BadCredentialsException e) {
-            log.error("用戶名:{}登入失败 INVALID_CREDENTIALS : {}", userName, e.getMessage());
-            throw new UserException(MgrResponseCode.USER_PASSWORD_INVALID, new Object[]{userName});
+            log.error("用戶名:{}登入失败 INVALID_CREDENTIALS : {}", memberName, e.getMessage());
+            throw new UserException(MgrResponseCode.USER_PASSWORD_INVALID, new Object[]{memberName});
         }
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -104,11 +105,12 @@ public class LoginServiceImpl implements LoginService {
         //產生jwtToken
         String jwtToken = jwtUtils.generateJwtToken(userDetails);
         //角色
-        List<String> roles = userDetails.getAuthorities().stream()
-                .map(item -> item.getAuthority())
-                .collect(Collectors.toList());
+        List<String> roles = userDetails.getAuthorities()
+                                        .stream()
+                                        .map(GrantedAuthority::getAuthority)
+                                        .collect(Collectors.toList());
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
-        log.info("{} 用戶:{} 擁有角色:{} 登入成功", LOG_PREFIX, userName, roles);
+        log.info("{} 用戶:{} 擁有角色:{} 登入成功", LOG_PREFIX, memberName, roles);
         //回傳JwtResponse
         return new JwtResponse(jwtToken, refreshToken.getToken(), userDetails.getId(), userDetails.getUsername(), userDetails.getEmail(), roles);
     }
@@ -119,17 +121,17 @@ public class LoginServiceImpl implements LoginService {
      *
      * @param signUpRequest 注册请求
      * @param servletRequest HttpServletRequest
-     * @return User 用户
+     * @return Member 用户
      * */
     @Transactional
     @Override
-    public User signUp(SignupRequest signUpRequest, HttpServletRequest servletRequest) {
-        String ip       = IpUtils.getIpAddr(servletRequest);
-        String email    = signUpRequest.getEmail();
-        String userName = signUpRequest.getUserName();
-        log.info("{} 新用戶:{} 註冊帳號", LOG_PREFIX, userName);
-        if (userRepository.existsByUserName(userName)) {
-            throw new UserException(MgrResponseCode.USER_ALREADY_EXISTS, new Object[]{userName});
+    public Member signUp(SignupRequest signUpRequest, HttpServletRequest servletRequest) {
+        String ip         = IpUtils.getIpAddr(servletRequest);
+        String email      = signUpRequest.getEmail();
+        String memberName = signUpRequest.getMemberName();
+        log.info("{} 新用戶:{} 註冊帳號", LOG_PREFIX, memberName);
+        if (userRepository.existsByMemberName(memberName)) {
+            throw new UserException(MgrResponseCode.USER_ALREADY_EXISTS, new Object[]{memberName});
         }
 
         if (userRepository.existsByEmail(email)) {
@@ -137,17 +139,17 @@ public class LoginServiceImpl implements LoginService {
         }
 
         //創建用戶 狀態:預設 1:啟用
-        User user = User.builder()
-                        .userName(userName)
-                        .email(email)
-                        .password(encoder.encode(signUpRequest.getPassword()))
-                        .ip(ip)
-                        .status(UserStatus.ENABLE.getCode())
-                        .createTime(new Date())
-                        .build();
+        Member member = Member.builder()
+                              .memberName(memberName)
+                              .email(email)
+                              .password(encoder.encode(signUpRequest.getPassword()))
+                              .ip(ip)
+                              .status(MemberStatus.ENABLE.getCode())
+                              .createTime(new Date())
+                              .build();
         //取得註冊腳色
         Set<Integer> intRoles = signUpRequest.getRole();
-        Set<Role> userRoles = new HashSet<>();
+        Set<Role> userRoles   = new HashSet<>();
         //为 null 预设USER
         if(Objects.isNull(intRoles)){
             roleRepository.findById(ERole.ROLE_USER.getRoleId())
@@ -177,10 +179,10 @@ public class LoginServiceImpl implements LoginService {
             });
         }
 
-        user.setRoles(userRoles);
-        User userResult = userRepository.save(user);
-        log.info("{} 新用戶:{} 註冊成功", LOG_PREFIX, userResult.getUserName());
-        return userResult;
+        member.setRoles(userRoles);
+        Member memberResult = userRepository.save(member);
+        log.info("{} 新用戶:{} 註冊成功", LOG_PREFIX,memberName);
+        return memberResult;
     }
 
     /**
@@ -195,9 +197,9 @@ public class LoginServiceImpl implements LoginService {
         String requestRefreshToken = refreshRequest.getRefreshToken();
         return refreshTokenService.findByToken(requestRefreshToken)
                 .map(refreshTokenService::verifyExpiration)
-                .map(RefreshToken::getUser)
+                .map(RefreshToken::getMember)
                 .map(user -> {
-                    String token = jwtUtils.generateTokenFromUsername(user.getUserName());
+                    String token = jwtUtils.generateTokenFromUsername(user.getMemberName());
                     return new TokenRefreshResponse(token, requestRefreshToken);
                 })
                 .orElseThrow(() -> new TokenRefreshException(MgrResponseCode.REFRESH_TOKEN_NOT_EXISTS_IN_DB, requestRefreshToken));
@@ -212,12 +214,12 @@ public class LoginServiceImpl implements LoginService {
     @Override
     public void logOutUser(SessionEntity sessionEntity, HttpServletRequest servletRequest) {
         Long userId = sessionEntity.getUserId();
-        User user = userRepository.findById(userId)
+        Member member = userRepository.findById(userId)
                 .orElseThrow(() -> new UserException(MgrResponseCode.USER_NOT_FOUND, new Object[]{userId}));
-        refreshTokenService.deleteByUserId(user);
+        refreshTokenService.deleteByUserId(member);
         String jwtToken = jwtUtils.parseJwt(servletRequest);
         redisTemplate.opsForValue().set(jwtToken, jwtToken, JwtConstants.LOGOUT_EXPIRATION_TIME, TimeUnit.HOURS);
-        log.info("{} 用戶:{} 登出裝置成功", LOG_PREFIX, user.getUserName());
+        log.info("{} 用戶:{} 登出裝置成功", LOG_PREFIX, member.getMemberName());
     }
 
 

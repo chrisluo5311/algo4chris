@@ -8,7 +8,7 @@ package com.algo4chris.algo4chriscommon.common.constant;
 public class RoleConstants {
 
     /**
-     * User
+     * Member
      * */
     public static final String ROLE_USER = "user";
     public static final int ROLE_USER_INT = 1;

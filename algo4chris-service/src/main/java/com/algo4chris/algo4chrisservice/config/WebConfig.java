@@ -1,12 +1,12 @@
 package com.algo4chris.algo4chrisservice.config;
 
 import com.algo4chris.algo4chriscommon.common.constant.SessionConstants;
+import com.algo4chris.algo4chrisdal.models.Member;
 import com.algo4chris.algo4chrisdal.session.SessionEntity;
 import com.algo4chris.algo4chriscommon.exception.responsecode.MgrResponseCode;
 import com.algo4chris.algo4chriscommon.exception.user.UserException;
 import com.algo4chris.algo4chriscommon.utils.IpUtils;
 import com.algo4chris.algo4chriscommon.utils.SessionUtils;
-import com.algo4chris.algo4chrisdal.models.User;
 import com.algo4chris.algo4chrisdal.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -46,9 +46,9 @@ public class WebConfig implements WebMvcConfigurer {
                                                             request.getQueryString());
                         SessionEntity sessionEntity = sessionUtils.pullSessionFromRequest(request);
                         String userName = sessionEntity.getUserName();
-                        User user = userRepository.findByUserName(userName)
+                        Member member = userRepository.findByMemberName(userName)
                                 .orElseThrow(()->new UserException(MgrResponseCode.USER_NOT_FOUND,new Object[]{userName}));
-                        sessionEntity.setUserId(user.getId());
+                        sessionEntity.setUserId(member.getId());
                         if(StringUtils.isBlank(sessionEntity.getIp())) {
                             sessionEntity.setIp("0.0.0.0");
                         }

@@ -2,8 +2,8 @@ package com.algo4chris.algo4chrisweb.security.services;
 
 import com.algo4chris.algo4chriscommon.exception.responsecode.MgrResponseCode;
 import com.algo4chris.algo4chriscommon.exception.tokenrefresh.TokenRefreshException;
+import com.algo4chris.algo4chrisdal.models.Member;
 import com.algo4chris.algo4chrisdal.models.RefreshToken;
-import com.algo4chris.algo4chrisdal.models.User;
 import com.algo4chris.algo4chrisdal.repository.RefreshTokenRepository;
 import com.algo4chris.algo4chrisdal.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -42,7 +42,7 @@ public class RefreshTokenService {
     public RefreshToken createRefreshToken(Long userId) {
         RefreshToken refreshToken = new RefreshToken();
 
-        refreshToken.setUser(userRepository.findById(userId).get());
+        refreshToken.setMember(userRepository.findById(userId).get());
         refreshToken.setExpiryDate(Instant.now().plusMillis(refreshTokenDurationMs));
         refreshToken.setToken(UUID.randomUUID().toString());
 
@@ -59,7 +59,7 @@ public class RefreshTokenService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public int deleteByUserId(User user) {
-        return refreshTokenRepository.deleteByUser(user);
+    public int deleteByUserId(Member member) {
+        return refreshTokenRepository.deleteByMember(member);
     }
 }

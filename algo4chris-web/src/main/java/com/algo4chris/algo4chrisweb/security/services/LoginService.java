@@ -1,7 +1,7 @@
 package com.algo4chris.algo4chrisweb.security.services;
 
 
-import com.algo4chris.algo4chrisdal.models.User;
+import com.algo4chris.algo4chrisdal.models.Member;
 import com.algo4chris.algo4chrisdal.session.SessionEntity;
 import com.algo4chris.algo4chrisweb.payload.request.LoginRequest;
 import com.algo4chris.algo4chrisweb.payload.request.SignupRequest;
@@ -34,9 +34,9 @@ public interface LoginService {
      *
      * @param signUpRequest 注册请求
      * @param servletRequest HttpServletRequest
-     * @return User 用户
+     * @return Member 用户
      * */
-    User signUp(SignupRequest signUpRequest, HttpServletRequest servletRequest);
+    Member signUp(SignupRequest signUpRequest, HttpServletRequest servletRequest);
 
     /**
      * 獲得新token
