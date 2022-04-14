@@ -27,8 +27,8 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
                                                                                        request.getQueryString());
         //response body 用户状态为0时为禁用 显示账号状态为禁用，请联系客服处理
         final Map<String, Object> disabledBody = new HashMap<>();
-        disabledBody.put("code", MgrResponseCode.USER_DISABLED.getCode());
-        disabledBody.put("message",MgrResponseCode.USER_DISABLED.getMessage());
+        disabledBody.put("code", MgrResponseCode.MEMBER_DISABLED.getCode());
+        disabledBody.put("message",MgrResponseCode.MEMBER_DISABLED.getMessage());
         disabledBody.put("path", request.getServletPath());
         final ObjectMapper mapper = new ObjectMapper();
         mapper.writeValue(response.getOutputStream(), disabledBody);

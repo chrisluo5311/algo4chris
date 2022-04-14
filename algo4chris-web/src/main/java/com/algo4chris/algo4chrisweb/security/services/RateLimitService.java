@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 public class RateLimitService {
 
     /** 一般人員每秒限制次數 */
-    private static final int NORMAL_MAX_REQUEST = 2;
+    private static final int NORMAL_MAX_REQUEST = 10;
     /** 測試人員每秒限制次數 */
     private static final int PRO_TEST_MAX_REQUEST = 30;
 

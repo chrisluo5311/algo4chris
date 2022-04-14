@@ -1,5 +1,6 @@
 package com.algo4chris.algo4chrisdal.models;
 
+import com.algo4chris.algo4chrisdal.models.enums.MemberStatus;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -45,7 +46,6 @@ public class Member {
     private String email;
 
     @JsonIgnore
-    @NotNull
     @Size(max = 120)
     @Column(name = "password")
     private String password;
@@ -57,14 +57,20 @@ public class Member {
     private Set<Role> roles = new HashSet<>();
 
     @Column(name = "status")
-    private Integer status;
+    @Builder.Default
+    private Integer status = MemberStatus.ENABLE.getCode();
+
+    @Column(name = "provider")
+    private Provider provider;
 
     @Column(name = "ip")
     private String ip;
 
+    @JsonIgnore
     @Column(name = "create_time")
     private Date createTime;
 
+    @JsonIgnore
     @Column(name = "update_time")
     private Date updateTime;
 

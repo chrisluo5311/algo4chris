@@ -39,13 +39,13 @@
          * */
         $("#submitSignup").click(function (e) {
             e.preventDefault();
-            var userName = $("#userName").val();
-            var email    = $("#email").val();
-            var userPwd  = $("#password").val();
+            var memberName = $("#memberName").val();
+            var email      = $("#email").val();
+            var pwd        = $("#password").val();
             var data = {
-                "userName": userName,
+                "memberName": memberName,
                 "email": email,
-                "password": userPwd
+                "password": pwd
             };
             $.ajax({
                 method:"POST",
@@ -85,8 +85,8 @@
                         <h3 class="mb-5" style="font-weight: bold">Welcome</h3>
 
                         <div class="form-outline mb-4">
-                            <input type="text" id="userName" class="form-control form-control-lg" />
-                            <label class="form-label" for="userName" style="font-weight: bold;font-size: large">User</label>
+                            <input type="text" id="memberName" class="form-control form-control-lg" />
+                            <label class="form-label" for="memberName" style="font-weight: bold;font-size: large">User</label>
                         </div>
 
                         <div class="form-outline mb-4">

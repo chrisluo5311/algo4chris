@@ -3,6 +3,7 @@ package com.algo4chris.algo4chrisweb.security.services;
 
 import com.algo4chris.algo4chrisdal.models.Member;
 import com.algo4chris.algo4chrisdal.session.SessionEntity;
+import com.algo4chris.algo4chrisweb.payload.request.AlgoOAuth2User;
 import com.algo4chris.algo4chrisweb.payload.request.LoginRequest;
 import com.algo4chris.algo4chrisweb.payload.request.SignupRequest;
 import com.algo4chris.algo4chrisweb.payload.request.TokenRefreshRequest;
@@ -53,4 +54,7 @@ public interface LoginService {
      * @param sessionEntity Session
      * */
     void logOutUser(SessionEntity sessionEntity, HttpServletRequest servletRequest);
+
+
+    void processOAuthPostLogin(AlgoOAuth2User oAuth2User,String ip);
 }

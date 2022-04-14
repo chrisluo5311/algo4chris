@@ -1,19 +1,16 @@
 package com.algo4chris.algo4chrisweb.security.services.impl;
 
 import com.algo4chris.algo4chriscommon.common.constant.JwtConstants;
-import com.algo4chris.algo4chriscommon.common.constant.RoleConstants;
 import com.algo4chris.algo4chriscommon.exception.responsecode.MgrResponseCode;
 import com.algo4chris.algo4chriscommon.exception.tokenrefresh.TokenRefreshException;
 import com.algo4chris.algo4chriscommon.exception.user.UserException;
 import com.algo4chris.algo4chriscommon.utils.IpUtils;
-import com.algo4chris.algo4chrisdal.models.ERole;
-import com.algo4chris.algo4chrisdal.models.Member;
-import com.algo4chris.algo4chrisdal.models.RefreshToken;
-import com.algo4chris.algo4chrisdal.models.Role;
+import com.algo4chris.algo4chrisdal.models.*;
 import com.algo4chris.algo4chrisdal.models.enums.MemberStatus;
 import com.algo4chris.algo4chrisdal.repository.RoleRepository;
 import com.algo4chris.algo4chrisdal.repository.UserRepository;
 import com.algo4chris.algo4chrisdal.session.SessionEntity;
+import com.algo4chris.algo4chrisweb.payload.request.AlgoOAuth2User;
 import com.algo4chris.algo4chrisweb.payload.request.LoginRequest;
 import com.algo4chris.algo4chrisweb.payload.request.SignupRequest;
 import com.algo4chris.algo4chrisweb.payload.request.TokenRefreshRequest;
@@ -94,10 +91,10 @@ public class LoginServiceImpl implements LoginService {
             authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(memberName, password));
         } catch (DisabledException e) {
             log.error("用戶名:{}登入失败 USER_DISABLED : {}", memberName, e.getMessage());
-            throw new UserException(MgrResponseCode.USER_NOT_FOUND, new Object[]{memberName});
+            throw new UserException(MgrResponseCode.MEMBER_NOT_FOUND, new Object[]{memberName});
         } catch (BadCredentialsException e) {
             log.error("用戶名:{}登入失败 INVALID_CREDENTIALS : {}", memberName, e.getMessage());
-            throw new UserException(MgrResponseCode.USER_PASSWORD_INVALID, new Object[]{memberName});
+            throw new UserException(MgrResponseCode.MEMBER_PASSWORD_INVALID, new Object[]{memberName});
         }
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -130,13 +127,7 @@ public class LoginServiceImpl implements LoginService {
         String email      = signUpRequest.getEmail();
         String memberName = signUpRequest.getMemberName();
         log.info("{} 新用戶:{} 註冊帳號", LOG_PREFIX, memberName);
-        if (userRepository.existsByMemberName(memberName)) {
-            throw new UserException(MgrResponseCode.USER_ALREADY_EXISTS, new Object[]{memberName});
-        }
-
-        if (userRepository.existsByEmail(email)) {
-            throw new UserException(MgrResponseCode.USER_EMAIL_ALREADY_EXISTS, new Object[]{email});
-        }
+        existsByMemberNameAndEmail(memberName,email);
 
         //創建用戶 狀態:預設 1:啟用
         Member member = Member.builder()
@@ -144,7 +135,6 @@ public class LoginServiceImpl implements LoginService {
                               .email(email)
                               .password(encoder.encode(signUpRequest.getPassword()))
                               .ip(ip)
-                              .status(MemberStatus.ENABLE.getCode())
                               .createTime(new Date())
                               .build();
         //取得註冊腳色
@@ -158,24 +148,9 @@ public class LoginServiceImpl implements LoginService {
                             new UserException(MgrResponseCode.ROLE_NOT_FOUND, new Object[]{ERole.ROLE_USER}));
         } else {
             //未知權限一律預設為一般使用者
-            intRoles.forEach(r -> {
-                switch (r) {
-                    case RoleConstants.ROLE_ADMIN_INT:
-                        roleRepository.findById(ERole.ROLE_ADMIN.getRoleId())
-                                .map(userRoles::add)
-                                .orElseThrow(() ->
-                                        new UserException(MgrResponseCode.ROLE_NOT_FOUND, new Object[]{ERole.ROLE_ADMIN}));
-                    case RoleConstants.ROLE_SELLER_INT:
-                        roleRepository.findById(ERole.ROLE_SELLER.getRoleId())
-                                .map(userRoles::add)
-                                .orElseThrow(() ->
-                                        new UserException(MgrResponseCode.ROLE_NOT_FOUND, new Object[]{ERole.ROLE_SELLER}));
-                    default:
-                        roleRepository.findById(ERole.ROLE_USER.getRoleId())
-                                .map(userRoles::add)
-                                .orElseThrow(() ->
-                                        new UserException(MgrResponseCode.ROLE_NOT_FOUND, new Object[]{ERole.ROLE_USER}));
-                }
+            intRoles.stream().map(ERole::getERole).forEach(e->{
+                roleRepository.findById(e.getRoleId()).map(userRoles::add).orElseThrow(() ->
+                        new UserException(MgrResponseCode.ROLE_NOT_FOUND, new Object[]{e}));
             });
         }
 
@@ -215,12 +190,53 @@ public class LoginServiceImpl implements LoginService {
     public void logOutUser(SessionEntity sessionEntity, HttpServletRequest servletRequest) {
         Long userId = sessionEntity.getUserId();
         Member member = userRepository.findById(userId)
-                .orElseThrow(() -> new UserException(MgrResponseCode.USER_NOT_FOUND, new Object[]{userId}));
+                .orElseThrow(() -> new UserException(MgrResponseCode.MEMBER_NOT_FOUND, new Object[]{userId}));
         refreshTokenService.deleteByUserId(member);
         String jwtToken = jwtUtils.parseJwt(servletRequest);
         redisTemplate.opsForValue().set(jwtToken, jwtToken, JwtConstants.LOGOUT_EXPIRATION_TIME, TimeUnit.HOURS);
         log.info("{} 用戶:{} 登出裝置成功", LOG_PREFIX, member.getMemberName());
     }
 
+    @Override
+    public void processOAuthPostLogin(AlgoOAuth2User oAuth2User,String ip) {
+        String memberName = oAuth2User.getName();
+        if(!userRepository.existsByMemberName(memberName)){
+            Member member = Member.builder()
+                    .memberName(memberName)
+                    .email(oAuth2User.getEmail())
+                    .ip(ip)
+                    .createTime(new Date())
+                    .provider(Provider.GOOGLE)
+                    .build();
+            Set<Role> userRoles   = new HashSet<>();
+            roleRepository.findById(ERole.ROLE_USER.getRoleId())
+                    .map(userRoles::add)
+                    .orElseThrow(() ->
+                            new UserException(MgrResponseCode.ROLE_NOT_FOUND, new Object[]{ERole.ROLE_USER}));
+            member.setRoles(userRoles);
+            try{
+                userRepository.save(member);
+            } catch (Exception e){
+                throw new UserException(MgrResponseCode.MEMBER_ALREADY_EXISTS,new Object[]{memberName});
+            }
+            log.info("{} 新用戶:{} 來源:{} 註冊成功",LOG_PREFIX,memberName,Provider.GOOGLE);
+        }
+    }
+
+    /**
+     * 用戶名與Email是否重複
+     *
+     * @param memberName 用戶名
+     * @param email email
+     * */
+    public void existsByMemberNameAndEmail(String memberName,String email) throws UserException{
+        if (userRepository.existsByMemberName(memberName)) {
+            throw new UserException(MgrResponseCode.MEMBER_ALREADY_EXISTS, new Object[]{memberName});
+        }
+
+        if (userRepository.existsByEmail(email)) {
+            throw new UserException(MgrResponseCode.MEMBER_EMAIL_ALREADY_EXISTS, new Object[]{email});
+        }
+    }
 
 }

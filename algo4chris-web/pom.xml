@@ -36,6 +36,12 @@
             <version>0.9.1</version>
         </dependency>
         <!-- security end -->
+        <!-- security oauth2 start -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-oauth2-client</artifactId>
+        </dependency>
+        <!-- security oauth2 end -->
         <dependency>
             <groupId>com.github.vladimir-bukhtoyarov</groupId>
             <artifactId>bucket4j-core</artifactId>

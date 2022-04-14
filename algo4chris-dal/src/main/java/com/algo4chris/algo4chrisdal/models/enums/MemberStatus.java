@@ -16,4 +16,5 @@ public enum MemberStatus {
     DISABLE(-1);
 
     private Integer code;
+
 }

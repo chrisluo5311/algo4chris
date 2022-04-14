@@ -2,12 +2,11 @@ package com.algo4chris.algo4chrisweb.security.jwt;
 
 
 import com.algo4chris.algo4chriscommon.common.constant.HttpExceptionConst;
-import com.algo4chris.algo4chriscommon.common.constant.JwtConstants;
+import com.algo4chris.algo4chriscommon.utils.LogUtil;
 import com.algo4chris.algo4chriscommon.utils.RandomUtil;
 import com.algo4chris.algo4chrisdal.session.SessionEntity;
 import com.algo4chris.algo4chriscommon.exception.responsecode.MgrResponseCode;
 import com.algo4chris.algo4chriscommon.exception.user.UserJwtException;
-import com.algo4chris.algo4chrisweb.advice.annotations.HttpRequestElements;
 import com.algo4chris.algo4chrisweb.security.services.RateLimitService;
 import com.algo4chris.algo4chrisweb.security.services.UserDetailsImpl;
 import com.algo4chris.algo4chrisweb.security.services.UserDetailsServiceImpl;
@@ -62,7 +61,8 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-        MDC.put("ramCode", "ramCode:"+ RandomUtil.getRandom(10));
+
+        LogUtil.setMDC(LogUtil.MDCKey.RandomCode,RandomUtil.getRandom(10));
         String ip = IpUtils.getIpAddr(request);
         log.info("【ip】:{} 【Request Method】:{} 【URI】: {}?{}",ip,request.getMethod(), request.getRequestURI(), request.getQueryString());
 //        HttpRequestElements.printGetMethodLog(request);
@@ -79,21 +79,21 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             //取 JWT
             String jwt = jwtUtils.parseJwt(request);
             if(jwt != null){
-                String userName = jwtUtils.getUserNameFromJwtToken(jwt);
-                MDC.put("userName", "userName:"+ userName);
+                String memberName = jwtUtils.getUserNameFromJwtToken(jwt);
+                LogUtil.setMDC(LogUtil.MDCKey.MemberName,memberName);
                 //查看 redis 登出黑名單
                 if(Boolean.TRUE.equals(redisTemplate.hasKey(jwt))){
-                    throw new UserJwtException(MgrResponseCode.USER_ALREADY_LOGOUT,new Object[]{userName});
+                    throw new UserJwtException(MgrResponseCode.MEMBER_ALREADY_LOGOUT,new Object[]{memberName});
                 }
                 if(jwtUtils.validateJwtToken(jwt,request)){
-                    UserDetails userDetails = userDetailsService.loadUserByUsername(userName);
+                    UserDetails userDetails = userDetailsService.loadUserByUsername(memberName);
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails,null,userDetails.getAuthorities());
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                     UserDetailsImpl userDetails1 = (UserDetailsImpl) userDetails;
                     SessionEntity sessionEntity = SessionEntity.builder()
                                                                .userId(userDetails1.getId())
-                                                               .userName(userName)
+                                                               .userName(memberName)
                                                                .email(userDetails1.getEmail())
                                                                .ip(ip)
                                                                .build();
@@ -104,7 +104,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
         } catch (ExpiredJwtException e) {
             request.setAttribute(HttpExceptionConst.JWT_EXPIRED_CODE_KEY ,e.getMessage());
         } catch (Exception e){
-            log.error("AuthTokenFilter 发生Exception原因: {}",e.getMessage());
+            log.error("AuthTokenFilter 發生Exception原因: {}",e.getMessage());
         }
         filterChain.doFilter(request, response);
         MDC.clear();

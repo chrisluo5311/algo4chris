@@ -51,7 +51,7 @@ public class SessionTestController {
             return "無操作權限";
         }
         Member member = userRepository.findByMemberName(userName)
-                .orElseThrow(() -> new UserException(MgrResponseCode.USER_NOT_FOUND,new Object[]{userName}));
+                .orElseThrow(() -> new UserException(MgrResponseCode.MEMBER_NOT_FOUND,new Object[]{userName}));
         SessionEntity sessionEntity = SessionEntity.builder().userId(member.getId()).userName(userName).build();
         String writeValueAsString = objectMapper.writeValueAsString(sessionEntity);
         byte[] encode = Base64.getEncoder().encode(writeValueAsString.getBytes());

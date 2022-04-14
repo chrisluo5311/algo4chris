@@ -47,7 +47,7 @@ public class WebConfig implements WebMvcConfigurer {
                         SessionEntity sessionEntity = sessionUtils.pullSessionFromRequest(request);
                         String userName = sessionEntity.getUserName();
                         Member member = userRepository.findByMemberName(userName)
-                                .orElseThrow(()->new UserException(MgrResponseCode.USER_NOT_FOUND,new Object[]{userName}));
+                                .orElseThrow(()->new UserException(MgrResponseCode.MEMBER_NOT_FOUND,new Object[]{userName}));
                         sessionEntity.setUserId(member.getId());
                         if(StringUtils.isBlank(sessionEntity.getIp())) {
                             sessionEntity.setIp("0.0.0.0");

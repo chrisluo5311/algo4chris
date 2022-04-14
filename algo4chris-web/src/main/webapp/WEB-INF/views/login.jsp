@@ -24,13 +24,14 @@
 
 <script>
     $(document).ready(function () {
-        var userName = $("#userName").val();
-        var userPwd  = $("#password").val();
-        var data = {
-            "userName":userName,
-            "password":userPwd
-        };
+
         $("#submitLogin").click(function (e) {
+            var userName = $("#userName").val();
+            var userPwd  = $("#password").val();
+            var data = {
+                "userName":userName,
+                "password":userPwd
+            };
             e.preventDefault();
             $.ajax({
                 method:"POST",
@@ -95,7 +96,7 @@
                         <hr class="my-4">
 
                         <div class="d-grid gap-2">
-                        <button class="btn btn-lg btn-block btn-primary" style="background-color: #dd4b39;" type="submit"><i class="fab fa-google me-2"></i> Sign in with google  </button>
+                        <button class="btn btn-lg btn-block btn-primary" style="background-color: #dd4b39;" type="submit"><a href="/oauth2/authorization/google"><i class="fab fa-google me-2"></i>Sign in with google</a></button>
                         <button class="btn btn-lg btn-block btn-primary mb-2" style="background-color: #3b5998;" type="submit"><i class="fab fa-facebook-f me-2"></i>Sign in with facebook</button>
                         </div>
                     </div>

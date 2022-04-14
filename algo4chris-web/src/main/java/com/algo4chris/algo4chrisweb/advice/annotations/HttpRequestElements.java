@@ -26,7 +26,7 @@ public enum HttpRequestElements implements HttpRequestLogService {
             stringBuilder.append("Request LOG :");
             stringBuilder.append("method=[").append(httpServletRequest.getMethod()).append("] ");
             stringBuilder.append("path=[").append(httpServletRequest.getRequestURI()).append("] ");
-            stringBuilder.append("headers=[").append(buildHeadersMap(httpServletRequest)).append("] ");
+//            stringBuilder.append("headers=[").append(buildHeadersMap(httpServletRequest)).append("] ");
             if (!parameters.isEmpty()) {
                 stringBuilder.append("parameters=[").append(parameters).append("] ");
             }

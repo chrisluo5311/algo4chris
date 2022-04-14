@@ -35,6 +35,7 @@ CREATE TABLE IF NOT EXISTS public.member
     create_time timestamp without time zone,
     ip character varying(255) COLLATE pg_catalog."default",
     status integer,
+    provider character varying(20) COLLATE pg_catalog."default",
     update_time timestamp without time zone,
     CONSTRAINT users_pkey PRIMARY KEY (id)
     )

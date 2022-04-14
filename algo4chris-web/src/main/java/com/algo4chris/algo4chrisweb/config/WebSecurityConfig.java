@@ -5,6 +5,8 @@ import com.algo4chris.algo4chrisweb.security.jwt.AuthEntryPointJWT;
 import com.algo4chris.algo4chrisweb.security.jwt.AuthTokenFilter;
 import com.algo4chris.algo4chrisweb.security.jwt.CustomAccessDeniedHandler;
 import com.algo4chris.algo4chrisweb.security.services.UserDetailsServiceImpl;
+import com.algo4chris.algo4chrisweb.security.services.impl.AlgoAuthSuccessHandler;
+import com.algo4chris.algo4chrisweb.security.services.impl.AlgoOAuth2UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,6 +25,7 @@ import org.springframework.security.web.firewall.HttpFirewall;
 import org.springframework.security.web.firewall.StrictHttpFirewall;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -39,11 +42,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     LogoutHandler logoutHandler;
 
     @Resource
-    AlgoProperties algoProperties;
+    AlgoOAuth2UserService oauthUserService;
 
     @Bean
     public AuthTokenFilter authenticationJwtTokenFilter() {
         return new AuthTokenFilter();
+    }
+
+    @Bean
+    public AlgoAuthSuccessHandler authSuccessHandler(){
+        return new AlgoAuthSuccessHandler();
     }
 
     @Bean
@@ -53,7 +61,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
-        //設置腳色定義
+        //設置角色定義
         authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
     }
 
@@ -75,13 +83,23 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return firewall;
     }
 
+    /** 忽略api的url */
+    public List<String> getApiIgnoredUrls(){
+        return AlgoProperties.apiIgnoredUrls;
+    }
+
+    /** 忽略靜態資源的url */
+    public List<String> getResourceUrls(){
+        return AlgoProperties.resourceUrls;
+    }
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry registry = http
                 .authorizeRequests();
         //不需保護的路徑訪問
-        algoProperties.apiIgnoredUrls.forEach(a-> registry.antMatchers(a).permitAll());
-        algoProperties.resourceUrls.forEach(r->registry.antMatchers(r).permitAll());
+        getApiIgnoredUrls().forEach(a-> registry.antMatchers(a).permitAll());
+        getResourceUrls().forEach(r->registry.antMatchers(r).permitAll());
 
         registry.and().cors().and().csrf().disable()
                 .exceptionHandling()
@@ -96,6 +114,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .invalidateHttpSession(true)
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
+        registry.and().oauth2Login()
+                .loginPage("/login")
+                .userInfoEndpoint()
+                .userService(oauthUserService)
+                .and()
+                .successHandler(authSuccessHandler())
+                .failureUrl("/403.html");
+
         //加filter
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
     }

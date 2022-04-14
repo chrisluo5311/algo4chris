@@ -1,3 +1,3 @@
-INSERT INTO roles(name) SELECT 'ROLE_USER' where not exists (select 1 from roles where id = 1);
-INSERT INTO roles(name) SELECT 'ROLE_SELLER' where not exists (select 1 from roles where id = 2);
-INSERT INTO roles(name) SELECT 'ROLE_ADMIN' where not exists (select 1 from roles where id = 3);
+INSERT INTO roles(id,name) values (1,'ROLE_USER') on conflict (id) DO NOTHING ;
+INSERT INTO roles(id,name) values (2,'ROLE_SELLER') on conflict (id) DO NOTHING ;
+INSERT INTO roles(id,name) values (3,'ROLE_ADMIN') on conflict (id) DO NOTHING ;
