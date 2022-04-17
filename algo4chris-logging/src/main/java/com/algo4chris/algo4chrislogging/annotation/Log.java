@@ -13,7 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package com.algo.algo4chrislogging.annotation;
+package com.algo4chris.algo4chrislogging.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

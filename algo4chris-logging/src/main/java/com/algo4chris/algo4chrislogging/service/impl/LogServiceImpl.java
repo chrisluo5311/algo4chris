@@ -1,10 +1,10 @@
-package com.algo.algo4chrislogging.service.impl;
+package com.algo4chris.algo4chrislogging.service.impl;
 
 import cn.hutool.json.JSONUtil;
-import com.algo.algo4chrislogging.annotation.Log;
+import com.algo4chris.algo4chrislogging.annotation.Log;
 import com.algo4chris.algo4chrisdal.models.OperateLog;
 import com.algo4chris.algo4chrisdal.repository.OperateLogRepository;
-import com.algo.algo4chrislogging.service.LogService;
+import com.algo4chris.algo4chrislogging.service.LogService;
 import com.algo4chris.algo4chriscommon.utils.WebUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;

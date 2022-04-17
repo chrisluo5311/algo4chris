@@ -13,10 +13,10 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package com.algo.algo4chrislogging.aspect;
+package com.algo4chris.algo4chrislogging.aspect;
 
 import com.algo4chris.algo4chrisdal.models.OperateLog;
-import com.algo.algo4chrislogging.service.LogService;
+import com.algo4chris.algo4chrislogging.service.LogService;
 import com.algo4chris.algo4chriscommon.utils.SecurityUtils;
 import com.algo4chris.algo4chriscommon.utils.WebUtils;
 import com.algo4chris.algo4chriscommon.utils.RequestHolder;
@@ -50,7 +50,7 @@ public class LogAspect {
     /**
      * 配置切入點
      */
-    @Pointcut("@annotation(com.algo.algo4chrislogging.annotation.Log)")
+    @Pointcut("@annotation(com.algo4chris.algo4chrislogging.annotation.Log)")
     public void logPointcut() {
     }
 

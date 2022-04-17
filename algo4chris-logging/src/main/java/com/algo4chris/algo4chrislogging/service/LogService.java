@@ -1,4 +1,4 @@
-package com.algo.algo4chrislogging.service;
+package com.algo4chris.algo4chrislogging.service;
 
 import com.algo4chris.algo4chrisdal.models.OperateLog;
 import org.aspectj.lang.ProceedingJoinPoint;
