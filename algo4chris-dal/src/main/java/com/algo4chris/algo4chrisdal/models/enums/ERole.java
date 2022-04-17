@@ -1,4 +1,4 @@
-package com.algo4chris.algo4chrisdal.models;
+package com.algo4chris.algo4chrisdal.models.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

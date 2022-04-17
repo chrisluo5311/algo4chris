@@ -10,7 +10,7 @@ import com.algo4chris.algo4chriscommon.exception.user.UserJwtException;
 import com.algo4chris.algo4chrisweb.security.services.RateLimitService;
 import com.algo4chris.algo4chrisweb.security.services.UserDetailsImpl;
 import com.algo4chris.algo4chrisweb.security.services.UserDetailsServiceImpl;
-import com.algo4chris.algo4chriscommon.utils.IpUtils;
+import com.algo4chris.algo4chriscommon.utils.WebUtils;
 import com.algo4chris.algo4chriscommon.utils.SessionUtils;
 import io.github.bucket4j.Bucket;
 import io.github.bucket4j.ConsumptionProbe;
@@ -63,7 +63,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
 
         LogUtil.setMDC(LogUtil.MDCKey.RandomCode,RandomUtil.getRandom(10));
-        String ip = IpUtils.getIpAddr(request);
+        String ip = WebUtils.getIp(request);
         log.info("【ip】:{} 【Request Method】:{} 【URI】: {}?{}",ip,request.getMethod(), request.getRequestURI(), request.getQueryString());
 //        HttpRequestElements.printGetMethodLog(request);
 

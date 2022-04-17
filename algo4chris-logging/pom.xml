@@ -8,10 +8,10 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
     <groupId>com.algo4chris</groupId>
-    <artifactId>algo4chris-service</artifactId>
+    <artifactId>algo4chris-logging</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>algo4chris-service</name>
-    <description>algo4chris-service</description>
+    <name>algo4chris-logging</name>
+    <description>algo4chris-logging</description>
     <properties>
         <java.version>1.8</java.version>
     </properties>
@@ -21,6 +21,4 @@
             <artifactId>algo4chris-common</artifactId>
         </dependency>
     </dependencies>
-
-
 </project>

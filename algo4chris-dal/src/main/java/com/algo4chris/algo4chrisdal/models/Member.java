@@ -1,6 +1,7 @@
 package com.algo4chris.algo4chrisdal.models;
 
 import com.algo4chris.algo4chrisdal.models.enums.MemberStatus;
+import com.algo4chris.algo4chrisdal.models.enums.Provider;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

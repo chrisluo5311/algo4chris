@@ -5,7 +5,7 @@ import com.algo4chris.algo4chrisdal.models.Member;
 import com.algo4chris.algo4chrisdal.session.SessionEntity;
 import com.algo4chris.algo4chriscommon.exception.responsecode.MgrResponseCode;
 import com.algo4chris.algo4chriscommon.exception.user.UserException;
-import com.algo4chris.algo4chriscommon.utils.IpUtils;
+import com.algo4chris.algo4chriscommon.utils.WebUtils;
 import com.algo4chris.algo4chriscommon.utils.SessionUtils;
 import com.algo4chris.algo4chrisdal.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -41,7 +41,7 @@ public class WebConfig implements WebMvcConfigurer {
                         if (request.getRequestURI().startsWith("/error")) {
                             return false;
                         }
-                        log.info(" IP來源:{}: 請求路徑:{}?{}", IpUtils.getIpAddr(request),
+                        log.info(" IP來源:{}: 請求路徑:{}?{}", WebUtils.getIp(request),
                                                             request.getRequestURI(),
                                                             request.getQueryString());
                         SessionEntity sessionEntity = sessionUtils.pullSessionFromRequest(request);

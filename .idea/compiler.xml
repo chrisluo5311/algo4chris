@@ -11,12 +11,14 @@
         <module name="algo4chris-service" />
         <module name="algo4chris-common" />
         <module name="algo4chris-dal" />
+        <module name="algo4chris-logging" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="algo4chris" target="1.8" />
       <module name="algo4chris-common" target="1.8" />
       <module name="algo4chris-dal" target="1.8" />
+      <module name="algo4chris-logging" target="1.8" />
       <module name="algo4chris-service" target="1.8" />
       <module name="algo4chris-web" target="1.8" />
     </bytecodeTargetLevel>
@@ -26,6 +28,7 @@
       <module name="algo4chris" options="-parameters" />
       <module name="algo4chris-common" options="-parameters" />
       <module name="algo4chris-dal" options="-parameters" />
+      <module name="algo4chris-logging" options="-parameters" />
       <module name="algo4chris-service" options="-parameters" />
       <module name="algo4chris-web" options="-parameters" />
     </option>

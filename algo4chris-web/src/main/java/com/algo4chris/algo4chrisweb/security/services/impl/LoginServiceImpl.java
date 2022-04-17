@@ -4,9 +4,10 @@ import com.algo4chris.algo4chriscommon.common.constant.JwtConstants;
 import com.algo4chris.algo4chriscommon.exception.responsecode.MgrResponseCode;
 import com.algo4chris.algo4chriscommon.exception.tokenrefresh.TokenRefreshException;
 import com.algo4chris.algo4chriscommon.exception.user.UserException;
-import com.algo4chris.algo4chriscommon.utils.IpUtils;
+import com.algo4chris.algo4chriscommon.utils.WebUtils;
 import com.algo4chris.algo4chrisdal.models.*;
-import com.algo4chris.algo4chrisdal.models.enums.MemberStatus;
+import com.algo4chris.algo4chrisdal.models.enums.ERole;
+import com.algo4chris.algo4chrisdal.models.enums.Provider;
 import com.algo4chris.algo4chrisdal.repository.RoleRepository;
 import com.algo4chris.algo4chrisdal.repository.UserRepository;
 import com.algo4chris.algo4chrisdal.session.SessionEntity;
@@ -123,7 +124,7 @@ public class LoginServiceImpl implements LoginService {
     @Transactional
     @Override
     public Member signUp(SignupRequest signUpRequest, HttpServletRequest servletRequest) {
-        String ip         = IpUtils.getIpAddr(servletRequest);
+        String ip         = WebUtils.getIp(servletRequest);
         String email      = signUpRequest.getEmail();
         String memberName = signUpRequest.getMemberName();
         log.info("{} 新用戶:{} 註冊帳號", LOG_PREFIX, memberName);

@@ -1,5 +1,11 @@
 package com.algo4chris.algo4chriscommon.utils;
 
+import cn.hutool.http.HttpUtil;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
+import nl.basjes.parse.useragent.UserAgent;
+import nl.basjes.parse.useragent.UserAgentAnalyzer;
+
 import javax.servlet.http.HttpServletRequest;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -10,9 +16,18 @@ import java.util.Objects;
  *
  * @author ruoyi
  */
-public class IpUtils {
+public class WebUtils {
 
-    public static String getIpAddr(HttpServletRequest request) {
+    private static final UserAgentAnalyzer USER_AGENT_ANALYZER = UserAgentAnalyzer
+            .newBuilder()
+            .hideMatcherLoadStats()
+            .withCache(10000)
+            .withField(UserAgent.AGENT_NAME_VERSION)
+            .build();
+
+    public static final String IP_URL = "http://whois.pconline.com.cn/ipJson.jsp?ip=%s&json=true";
+
+    public static String getIp(HttpServletRequest request) {
         if (request == null) {
             return "unknown";
         }
@@ -162,5 +177,23 @@ public class IpUtils {
         } catch (UnknownHostException e) {
         }
         return "未知";
+    }
+
+    /**
+     * 獲取瀏覽器
+     * @param request HttpServletRequest
+     */
+    public static String getBrowser(HttpServletRequest request) {
+        UserAgent.ImmutableUserAgent userAgent = USER_AGENT_ANALYZER.parse(request.getHeader("User-Agent"));
+        return userAgent.get(UserAgent.AGENT_NAME_VERSION).getValue();
+    }
+
+    /**
+     * 根据ip獲取詳細地址
+     */
+    public static String getCityInfo(String ip) {
+        String api = String.format(IP_URL, ip);
+        JSONObject object = JSONUtil.parseObj(HttpUtil.get(api));
+        return object.get("addr", String.class);
     }
 }

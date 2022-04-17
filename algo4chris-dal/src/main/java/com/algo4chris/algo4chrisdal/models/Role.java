@@ -1,5 +1,6 @@
 package com.algo4chris.algo4chrisdal.models;
 
+import com.algo4chris.algo4chrisdal.models.enums.ERole;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

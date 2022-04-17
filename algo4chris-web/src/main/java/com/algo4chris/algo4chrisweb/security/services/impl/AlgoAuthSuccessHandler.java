@@ -1,6 +1,6 @@
 package com.algo4chris.algo4chrisweb.security.services.impl;
 
-import com.algo4chris.algo4chriscommon.utils.IpUtils;
+import com.algo4chris.algo4chriscommon.utils.WebUtils;
 import com.algo4chris.algo4chrisweb.payload.request.AlgoOAuth2User;
 import com.algo4chris.algo4chrisweb.security.services.LoginService;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +23,7 @@ public class AlgoAuthSuccessHandler implements AuthenticationSuccessHandler {
     public void onAuthenticationSuccess(HttpServletRequest request,
                                         HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
-        String ip = IpUtils.getIpAddr(request);
+        String ip = WebUtils.getIp(request);
         AlgoOAuth2User oauthUser = (AlgoOAuth2User) authentication.getPrincipal();
         loginService.processOAuthPostLogin(oauthUser,ip);
         response.sendRedirect("/loginSuccess");

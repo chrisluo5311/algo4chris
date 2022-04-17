@@ -10,7 +10,9 @@ import lombok.extern.slf4j.Slf4j;
 public enum Modules {
 
     USER("USER"),
-    REFRESH_TOKEN("refreshToken");
+    REFRESH_TOKEN("refreshToken"),
+
+    BAD_REQUEST("BAD_REQUEST");
 
     private String code;
 

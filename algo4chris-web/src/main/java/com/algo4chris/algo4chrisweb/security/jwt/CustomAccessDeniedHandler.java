@@ -1,7 +1,7 @@
 package com.algo4chris.algo4chrisweb.security.jwt;
 
 import com.algo4chris.algo4chriscommon.exception.responsecode.MgrResponseCode;
-import com.algo4chris.algo4chriscommon.utils.IpUtils;
+import com.algo4chris.algo4chriscommon.utils.WebUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
@@ -20,7 +20,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
     public void handle(HttpServletRequest request,
                        HttpServletResponse response,
                        AccessDeniedException e) throws IOException, ServletException {
-        String ip = IpUtils.getIpAddr(request);
+        String ip = WebUtils.getIp(request);
         log.error("【ClientAccessDeniedHandler】【ip】:{} 禁用信息: {} 請求路徑uri: {}?{}",ip,
                                                                                        e.getMessage(),
                                                                                        request.getRequestURI(),

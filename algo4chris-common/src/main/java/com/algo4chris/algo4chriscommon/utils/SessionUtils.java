@@ -1,7 +1,6 @@
 package com.algo4chris.algo4chriscommon.utils;
 
 import com.algo4chris.algo4chriscommon.common.constant.SessionConstants;
-import com.algo4chris.algo4chriscommon.utils.IpUtils;
 import com.algo4chris.algo4chrisdal.session.SessionEntity;
 import com.algo4chris.algo4chriscommon.exception.responsecode.MgrResponseCode;
 import com.algo4chris.algo4chriscommon.exception.user.UserJwtException;
@@ -39,7 +38,7 @@ public class SessionUtils {
     public SessionEntity pullSessionFromRequest(HttpServletRequest servletRequest) throws JsonProcessingException, UserJwtException {
         String encodedJson = servletRequest.getHeader(SessionConstants.SESSION_ATTRIBUTE_KEY);
         if (StringUtils.isBlank(encodedJson)) {
-            log.warn("請求來源未带有token 請求ip位址: {}", IpUtils.getIpAddr(servletRequest));
+            log.warn("請求來源未带有token 請求ip位址: {}", WebUtils.getIp(servletRequest));
             throw new UserJwtException(MgrResponseCode.REQUEST_WITHOUT_TOKEN,null);
         }
         String json = new String(Base64.getDecoder().decode(encodedJson));

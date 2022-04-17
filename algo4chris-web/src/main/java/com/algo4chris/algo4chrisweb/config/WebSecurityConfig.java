@@ -115,6 +115,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
+        //配置oauth2
         registry.and().oauth2Login()
                 .loginPage("/login")
                 .userInfoEndpoint()
