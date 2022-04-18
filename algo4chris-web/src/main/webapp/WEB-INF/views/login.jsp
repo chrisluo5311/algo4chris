@@ -41,7 +41,7 @@
                 dataType:'JSON',
                 success: function (result) {
                     console.log(result);
-                    if(result.code == "0000"){
+                    if(result.code === "0000"){
                         window.location.href = ("http://localhost:8090/loginSuccess");
                     } else {
                         window.alert(result.message);
@@ -54,7 +54,27 @@
             });
         });
 
-
+        $("#googleLogin").click(function (e) {
+            e.preventDefault();
+            $.ajax({
+                method:"GET",
+                url:"/oauth2/authorization/google",
+                success: function (result) {
+                    console.log(result);
+                    if(result.code === "0000"){
+                        const token = result.data.token;
+                        console.log(token);
+                        window.location.href = ("http://localhost:8090/loginSuccess");
+                    } else {
+                        window.alert(result.message);
+                    }
+                },
+                error: function (result) {
+                    console.log(result);
+                    window.alert(result.message);
+                }
+            });
+        });
 
     });
 </script>
@@ -96,7 +116,7 @@
                         <hr class="my-4">
 
                         <div class="d-grid gap-2">
-                        <button class="btn btn-lg btn-block btn-primary" style="background-color: #dd4b39;" type="submit"><a href="/oauth2/authorization/google"><i class="fab fa-google me-2"></i>Sign in with google</a></button>
+                        <button id="googleLogin" class="btn btn-lg btn-block btn-primary" style="background-color: #dd4b39;" type="submit"><i class="fab fa-google me-2"></i>Sign in with google</button>
                         <button class="btn btn-lg btn-block btn-primary mb-2" style="background-color: #3b5998;" type="submit"><i class="fab fa-facebook-f me-2"></i>Sign in with facebook</button>
                         </div>
                     </div>

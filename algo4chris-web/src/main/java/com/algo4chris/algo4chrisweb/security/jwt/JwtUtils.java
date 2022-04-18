@@ -61,12 +61,12 @@ public class JwtUtils {
     /**
      * 透過用戶名自產生jwt token
      *
-     * @param username 用戶名
+     * @param memberName 用戶名
      * @return jwt token
      * */
-    public String generateTokenFromUsername(String username) {
+    public String generateTokenFromUsername(String memberName) {
         return Jwts.builder()
-                   .setSubject(username)
+                   .setSubject(memberName)
                    .setIssuedAt(new Date())
                    .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))//設expiration
                    .signWith(SignatureAlgorithm.HS512, decryptJwtSecret)//簽名方式(帶密鑰

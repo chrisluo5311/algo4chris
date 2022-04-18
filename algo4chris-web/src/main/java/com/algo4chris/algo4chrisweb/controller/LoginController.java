@@ -2,6 +2,7 @@ package com.algo4chris.algo4chrisweb.controller;
 
 import com.algo4chris.algo4chriscommon.common.constant.JwtConstants;
 import com.algo4chris.algo4chriscommon.common.response.MgrResponseDto;
+import com.algo4chris.algo4chrislogging.annotation.Log;
 import com.algo4chris.algo4chrisweb.payload.request.LoginRequest;
 import com.algo4chris.algo4chrisweb.payload.request.SignupRequest;
 import com.algo4chris.algo4chrisweb.payload.request.TokenRefreshRequest;
@@ -47,6 +48,7 @@ public class LoginController {
         return MgrResponseDto.success(jwtResponse);
     }
 
+    @Log(value = "用戶註冊")
     @ApiOperation(value = "用户註冊", httpMethod = "POST")
     @RequestMapping(value = "/signup",method = RequestMethod.POST)
     public MgrResponseDto<Member> registerUser(@Valid @RequestBody SignupRequest signUpRequest,

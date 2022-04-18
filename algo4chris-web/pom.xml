@@ -20,7 +20,10 @@
             <groupId>com.algo4chris</groupId>
             <artifactId>algo4chris-common</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>com.algo4chris</groupId>
+            <artifactId>algo4chris-logging</artifactId>
+        </dependency>
         <dependency>
             <groupId>com.github.vladimir-bukhtoyarov</groupId>
             <artifactId>bucket4j-core</artifactId>

@@ -143,10 +143,10 @@ public class LoginServiceImpl implements LoginService {
         Set<Role> userRoles   = new HashSet<>();
         //为 null 预设USER
         if(Objects.isNull(intRoles)){
-            roleRepository.findById(ERole.ROLE_USER.getRoleId())
+            roleRepository.findById(ERole.ROLE_MEMBER.getRoleId())
                     .map(userRoles::add)
                     .orElseThrow(() ->
-                            new UserException(MgrResponseCode.ROLE_NOT_FOUND, new Object[]{ERole.ROLE_USER}));
+                            new UserException(MgrResponseCode.ROLE_NOT_FOUND, new Object[]{ERole.ROLE_MEMBER}));
         } else {
             //未知權限一律預設為一般使用者
             intRoles.stream().map(ERole::getERole).forEach(e->{
@@ -154,7 +154,6 @@ public class LoginServiceImpl implements LoginService {
                         new UserException(MgrResponseCode.ROLE_NOT_FOUND, new Object[]{e}));
             });
         }
-
         member.setRoles(userRoles);
         Member memberResult = userRepository.save(member);
         log.info("{} 新用戶:{} 註冊成功", LOG_PREFIX,memberName);
@@ -199,7 +198,7 @@ public class LoginServiceImpl implements LoginService {
     }
 
     @Override
-    public void processOAuthPostLogin(AlgoOAuth2User oAuth2User,String ip) {
+    public JwtResponse processOAuthPostLogin(AlgoOAuth2User oAuth2User,String ip) {
         String memberName = oAuth2User.getName();
         if(!userRepository.existsByMemberName(memberName)){
             Member member = Member.builder()
@@ -209,18 +208,23 @@ public class LoginServiceImpl implements LoginService {
                     .createTime(new Date())
                     .provider(Provider.GOOGLE)
                     .build();
-            Set<Role> userRoles   = new HashSet<>();
-            roleRepository.findById(ERole.ROLE_USER.getRoleId())
-                    .map(userRoles::add)
+            Set<Role> memberRoles   = new HashSet<>();
+            roleRepository.findById(ERole.ROLE_MEMBER.getRoleId())
+                    .map(memberRoles::add)
                     .orElseThrow(() ->
-                            new UserException(MgrResponseCode.ROLE_NOT_FOUND, new Object[]{ERole.ROLE_USER}));
-            member.setRoles(userRoles);
-            try{
-                userRepository.save(member);
-            } catch (Exception e){
-                throw new UserException(MgrResponseCode.MEMBER_ALREADY_EXISTS,new Object[]{memberName});
-            }
-            log.info("{} 新用戶:{} 來源:{} 註冊成功",LOG_PREFIX,memberName,Provider.GOOGLE);
+                            new UserException(MgrResponseCode.ROLE_NOT_FOUND, new Object[]{ERole.ROLE_MEMBER}));
+            member.setRoles(memberRoles);
+            Member result = userRepository.save(member);
+            //產生jwtToken
+            String jwtToken = jwtUtils.generateTokenFromUsername(memberName);
+            RefreshToken refreshToken = refreshTokenService.createRefreshToken(result.getId());
+            List<String> rolesList = memberRoles.stream().map(Role::getName).map(ERole::name).collect(Collectors.toList());
+            log.info("{} 新用戶:{} 來源:{} 擁有角色:{} 註冊成功",LOG_PREFIX,memberName,Provider.GOOGLE,memberRoles);
+            //回傳JwtResponse
+            return new JwtResponse(jwtToken, refreshToken.getToken(),result.getId(),
+                                   memberName, oAuth2User.getEmail(), rolesList);
+        } else {
+            throw new UserException(MgrResponseCode.MEMBER_ALREADY_EXISTS,new Object[]{memberName});
         }
     }
 

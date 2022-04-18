@@ -56,5 +56,5 @@ public interface LoginService {
     void logOutUser(SessionEntity sessionEntity, HttpServletRequest servletRequest);
 
 
-    void processOAuthPostLogin(AlgoOAuth2User oAuth2User,String ip);
+    JwtResponse processOAuthPostLogin(AlgoOAuth2User oAuth2User,String ip);
 }
