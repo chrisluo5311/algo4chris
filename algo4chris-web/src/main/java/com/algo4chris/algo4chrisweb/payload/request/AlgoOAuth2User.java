@@ -6,6 +6,12 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import java.util.Collection;
 import java.util.Map;
 
+/**
+ * 自訂義OAuth2User類
+ * 獲取名字與Email
+ *
+ * @author chris
+ * */
 public class AlgoOAuth2User implements OAuth2User {
 
     private OAuth2User oauth2User;

@@ -19,15 +19,29 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Objects;
 
 /**
- * 獲取 HttpServletRequest
+ * 獲取 HttpServletRequest & HttpServletResponse
+ *
  * @author chris
  */
 public class RequestHolder {
 
+    /**
+     * 獲取HttpServletRequest
+     * */
     public static HttpServletRequest getHttpServletRequest() {
-        return ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes())).getRequest();
+        return ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes()))
+                .getRequest();
+    }
+
+    /**
+     * 獲取HttpServletResponse
+     * */
+    public static HttpServletResponse getHttpServletResponse() {
+        return ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes()))
+                .getResponse();
     }
 }

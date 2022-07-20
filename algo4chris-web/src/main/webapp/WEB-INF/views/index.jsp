@@ -1,11 +1,15 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="sec"	uri="http://www.springframework.org/security/tags"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix='form' uri="http://www.springframework.org/tags/form"%>
 <!doctype html>
 <html lang="en" class="h-100">
 <head>
     <meta charset="utf-8">
+    <meta http-equiv="Cache-Control" content="no-cache" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
@@ -33,7 +37,13 @@
 </head>
 <script>
     $(document).ready(function () {
+        let jwtTokenKey = 'jwtTokenKey';
+        let refreshTokenKey = 'refreshToken';
 
+        var jwtToken = '${jwtToken}';
+        var refreshToken = '${refreshToken}';
+        localStorage.setItem(jwtTokenKey,jwtToken);
+        localStorage.setItem(refreshTokenKey,refreshToken);
     });
 </script>
 
@@ -48,8 +58,16 @@
                 <a class="nav-link active" aria-current="page" href="#">Home</a>
                 <!--        <a class="nav-link" href="#">Features</a>-->
                 <!--        <a class="nav-link" href="#">Contact</a>-->
-                <a class="nav-link" href="<c:url value='/login' />">Sign in</a>
-                <a class="nav-link" href="<c:url value='/signup' />">Sign up</a>
+                <c:choose>
+                    <c:when test="${memberName != null}">
+                        <a class="nav-link active" href="#">Hi!${memberName}</a>
+                    </c:when>
+                    <c:otherwise>
+                        <a class="nav-link active" href="<c:url value='/login' />">Sign in</a>
+                        <a class="nav-link active" href="<c:url value='/signup' />">Sign up</a>
+                    </c:otherwise>
+                </c:choose>
+
             </nav>
         </div>
     </header>
@@ -58,6 +76,7 @@
         <!--    <h1>Cover your page.</h1>-->
         <!--    <p class="lead">Cover is a one-page template for building simple and beautiful home pages. Download, edit the text, and add your own fullscreen background photo to make it your own.</p>-->
         <a class="btn btn-lg btn-secondary fw-bold border-white bg-white" href="https://www.google.com/">Learn more</a>
+
         </p>
     </main>
 

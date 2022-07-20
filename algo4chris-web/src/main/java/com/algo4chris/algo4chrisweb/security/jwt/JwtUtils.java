@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Base64;
 import java.util.Date;
 
+import static com.algo4chris.algo4chriscommon.common.constant.JwtConstants.AUTHORIZATION_CODE_KEY;
+
 /**
  * jwt 工具類
  *
@@ -123,9 +125,12 @@ public class JwtUtils {
      */
     public String parseJwt(HttpServletRequest request) {
         String jwtToken = null;
-
-        final String requestTokenHeader = request.getHeader(JwtConstants.AUTHORIZATION_CODE_KEY);
-
+        String requestTokenHeader = null;
+        if(request.getParameter(AUTHORIZATION_CODE_KEY)!=null){
+            requestTokenHeader = request.getParameter(AUTHORIZATION_CODE_KEY);
+        } else {
+            requestTokenHeader = request.getHeader(AUTHORIZATION_CODE_KEY);
+        }
         // JWT Token在"Bearer token"里 移除Bearer字段只取Token
         if (requestTokenHeader != null) {
             if (requestTokenHeader.startsWith(JwtConstants.BEARER_CODE_KEY)) {

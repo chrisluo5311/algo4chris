@@ -1,5 +1,6 @@
 package com.algo4chris.algo4chrisdal.models;
 
+import com.algo4chris.algo4chrisdal.models.enums.MailVerify;
 import com.algo4chris.algo4chrisdal.models.enums.MemberStatus;
 import com.algo4chris.algo4chrisdal.models.enums.Provider;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -7,6 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
@@ -61,16 +64,22 @@ public class Member {
     @Builder.Default
     private Integer status = MemberStatus.ENABLE.getCode();
 
+    @Column(name = "mail_verify")
+    @Builder.Default
+    private Integer mailVerify = MailVerify.DISABLE.getCode();
+
     @Column(name = "provider")
     private Provider provider;
 
     @Column(name = "ip")
     private String ip;
 
+    @CreationTimestamp
     @JsonIgnore
     @Column(name = "create_time")
     private Date createTime;
 
+    @UpdateTimestamp
     @JsonIgnore
     @Column(name = "update_time")
     private Date updateTime;

@@ -4,11 +4,13 @@
     <contextName>logback</contextName>
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
         <encoder charset="UTF-8">
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %clr(%-5level) %clr(${PID:- }){magenta} --- [%15thread] %clr(%-39logger{36}){cyan}  : %clr(%X{ramCode}){highlight} %clr(%X{memberName}){highlight}  %msg%n</pattern>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %clr(%-5level) %clr(${PID:- }){magenta} --- [%15thread] %clr(%-39logger{36}){cyan}  : %clr(%X{ramCode}){highlight} %clr(%X{memberName}){yellow}  %msg%n</pattern>
         </encoder>
     </appender>
     <logger name="springfox.documentation.spring.web.readers.operation.CachingOperationNameGenerator" level="OFF" additivity="false"/>
     <logger name="springfox.documentation.schema.property.CachingModelPropertiesProvider" level="OFF" additivity="false"/>
+    <logger name="nl.basjes.parse.useragent.utils.YauaaVersion" level="OFF" additivity="false"/>
+
     <root level="INFO">
         <appender-ref ref="console" />
     </root>

@@ -25,23 +25,23 @@ public class TestController {
         return "Public Content.";
     }
 
-    @ApiOperation(value = "user角色", httpMethod = "GET")
-    @GetMapping("/user")
-    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+    @ApiOperation(value = "MEMBER角色", httpMethod = "GET")
+    @GetMapping("/allMember")
+    @PreAuthorize("hasRole('ROLE_MEMBER') or hasRole('ROLE_SELLER') or hasRole('ROLE_ADMIN')")
     public String userAccess() {
         return "Member Content.";
     }
 
-    @ApiOperation(value = "mod角色", httpMethod = "GET")
-    @GetMapping("/mod")
-    @PreAuthorize("hasRole('MODERATOR')")
+    @ApiOperation(value = "SELLER角色", httpMethod = "GET")
+    @GetMapping("/seller")
+    @PreAuthorize("hasRole('ROLE_SELLER')")
     public String moderatorAccess() {
         return "Moderator Board.";
     }
 
     @ApiOperation(value = "admin角色", httpMethod = "GET")
     @GetMapping("/admin")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public String adminAccess() {
         return "Admin Board.";
     }

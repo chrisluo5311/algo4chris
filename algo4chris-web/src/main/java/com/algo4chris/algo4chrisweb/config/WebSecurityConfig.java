@@ -9,6 +9,7 @@ import com.algo4chris.algo4chrisweb.security.services.impl.AlgoAuthSuccessHandle
 import com.algo4chris.algo4chrisweb.security.services.impl.AlgoOAuth2UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -107,6 +108,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .accessDeniedHandler(accessDeniedHandler())
                 .and()
                 .authorizeRequests()
+                .antMatchers(HttpMethod.OPTIONS).permitAll()
                 .antMatchers("/api/service/**").hasAuthority("1")
                 .anyRequest().authenticated()
                 .and()
@@ -122,7 +124,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .userService(oauthUserService)
                 .and()
                 .successHandler(authSuccessHandler())
-                .failureUrl("/403.html");
+                .failureUrl("/index");
 
         //加filter
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);

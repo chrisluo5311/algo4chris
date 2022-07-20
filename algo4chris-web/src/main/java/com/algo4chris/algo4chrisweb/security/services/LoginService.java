@@ -27,7 +27,7 @@ public interface LoginService {
      * @param loginRequest 登入請求
      * @return JwtResponse
      * */
-    JwtResponse loginMember(LoginRequest loginRequest);
+    JwtResponse loginMember(LoginRequest loginRequest, HttpServletRequest servletRequest);
 
     /**
      * 注册<br>
@@ -37,7 +37,7 @@ public interface LoginService {
      * @param servletRequest HttpServletRequest
      * @return Member 用户
      * */
-    Member signUp(SignupRequest signUpRequest, HttpServletRequest servletRequest);
+    JwtResponse signUp(SignupRequest signUpRequest, HttpServletRequest servletRequest);
 
     /**
      * 獲得新token
@@ -55,6 +55,12 @@ public interface LoginService {
      * */
     void logOutUser(SessionEntity sessionEntity, HttpServletRequest servletRequest);
 
-
+    /**
+     * 處理OAuth登入
+     *
+     * @param oAuth2User 自訂OAuth2User
+     * @param ip ip
+     * @return JwtResponse
+     * */
     JwtResponse processOAuthPostLogin(AlgoOAuth2User oAuth2User,String ip);
 }

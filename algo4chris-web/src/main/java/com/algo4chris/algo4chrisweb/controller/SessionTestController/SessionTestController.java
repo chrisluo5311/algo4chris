@@ -4,7 +4,7 @@ import com.algo4chris.algo4chriscommon.common.constant.InnerRouteConst;
 import com.algo4chris.algo4chriscommon.exception.responsecode.MgrResponseCode;
 import com.algo4chris.algo4chriscommon.exception.user.UserException;
 import com.algo4chris.algo4chrisdal.models.Member;
-import com.algo4chris.algo4chrisdal.repository.UserRepository;
+import com.algo4chris.algo4chrisdal.repository.MemberRepository;
 import com.algo4chris.algo4chrisdal.session.SessionEntity;
 import com.algo4chris.algo4chrisweb.security.jwt.JwtUtils;
 import com.algo4chris.algo4chrisweb.security.services.UserDetailsServiceImpl;
@@ -33,7 +33,7 @@ public class SessionTestController {
     private boolean isProd;
 
     @Resource
-    UserRepository userRepository;
+    MemberRepository memberRepository;
 
     @Resource
     ObjectMapper objectMapper;
@@ -50,7 +50,7 @@ public class SessionTestController {
         if(isProd) {
             return "無操作權限";
         }
-        Member member = userRepository.findByMemberName(userName)
+        Member member = memberRepository.findByMemberName(userName)
                 .orElseThrow(() -> new UserException(MgrResponseCode.MEMBER_NOT_FOUND,new Object[]{userName}));
         SessionEntity sessionEntity = SessionEntity.builder().userId(member.getId()).userName(userName).build();
         String writeValueAsString = objectMapper.writeValueAsString(sessionEntity);

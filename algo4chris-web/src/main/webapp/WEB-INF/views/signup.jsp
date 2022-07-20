@@ -27,8 +27,8 @@
 
         //domain & api url
         let httpDomain   = "http://localhost:8080/";
-        let signUpUrl    = "/api/signup";
-        let loginSuccess = "loginSuccess";
+        let signUpUrl    = "/api/signUpAccount";
+        let homeUrl = "home";
 
         //响应参数
         let response_success = "0000";
@@ -56,14 +56,21 @@
                 success: function (result) {
                     console.log(result);
                     if(result.code === response_success){
-                        window.location.href = (httpDomain + loginSuccess);
+                        //重導向到首頁
+                        var jwtToken = result.data.token;
+                        var mName = result.data.memberName;
+                        var rToken = result.data.refreshToken;
+                        var redirectUrl = httpDomain+homeUrl+"?Authorization=Bearer "+jwtToken
+                            +"&memberName="+mName
+                            +"&refreshToken="+rToken;
+                        console.log(redirectUrl);
+                        window.location.href=redirectUrl;
                     } else {
-                        window.alert(result.message);
+                        console.log(result.message);
                     }
                 },
                 error: function (result) {
                     console.log(result);
-                    window.alert(result.message);
                 }
             });
         });

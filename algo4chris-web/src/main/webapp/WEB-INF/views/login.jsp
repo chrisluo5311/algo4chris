@@ -12,18 +12,39 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
     <title>{ ㄏ; }</title>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
     <script type="text/javascript" src="<c:url value='/webjars/jquery/3.5.1/jquery.js'/>"></script>
     <link rel='stylesheet' href="<c:url value='/webjars/bootstrap/4.6.0/css/bootstrap.min.css' />" />
     <script type="text/javascript" src="<c:url value='/webjars/bootstrap/4.6.0/js/bootstrap.min.js'/>"></script>
+    <script src="https://kit.fontawesome.com/a098be7c25.js" crossorigin="anonymous"></script>
 </head>
 <style>
-
+    a{
+        text-decoration:none;
+    }
+    a:visited {
+        color: #ffffff
+    }
+    a:hover{
+        color: #ffffff
+    }
+    a:link {
+        color: #ffffff
+    }
+    a:active {
+        color: #ffffff
+    }
 </style>
 
 <script>
     $(document).ready(function () {
+
+        let api_login_url = "/api/login";
+        let oauth2_google_url = "/oauth2/authorization/google";
 
         $("#submitLogin").click(function (e) {
             var userName = $("#userName").val();
@@ -35,7 +56,7 @@
             e.preventDefault();
             $.ajax({
                 method:"POST",
-                url:"/api/login",
+                url:api_login_url,
                 contentType: 'application/json; charset=utf-8',
                 data : JSON.stringify(data),
                 dataType:'JSON',
@@ -54,27 +75,11 @@
             });
         });
 
-        $("#googleLogin").click(function (e) {
-            e.preventDefault();
-            $.ajax({
-                method:"GET",
-                url:"/oauth2/authorization/google",
-                success: function (result) {
-                    console.log(result);
-                    if(result.code === "0000"){
-                        const token = result.data.token;
-                        console.log(token);
-                        window.location.href = ("http://localhost:8090/loginSuccess");
-                    } else {
-                        window.alert(result.message);
-                    }
-                },
-                error: function (result) {
-                    console.log(result);
-                    window.alert(result.message);
-                }
-            });
-        });
+        // $("#googleLogin").click(function (e) {
+        //     e.preventDefault();
+        //     window.location.href = "";
+        //     // window.addEventListener()
+        // });
 
     });
 </script>
@@ -116,8 +121,8 @@
                         <hr class="my-4">
 
                         <div class="d-grid gap-2">
-                        <button id="googleLogin" class="btn btn-lg btn-block btn-primary" style="background-color: #dd4b39;" type="submit"><i class="fab fa-google me-2"></i>Sign in with google</button>
-                        <button class="btn btn-lg btn-block btn-primary mb-2" style="background-color: #3b5998;" type="submit"><i class="fab fa-facebook-f me-2"></i>Sign in with facebook</button>
+                            <button id="googleLogin" class="btn btn-lg btn-block btn-primary" style="background-color: #dd4b39;" type="submit"><i class="fab fa-google me-2"></i><a href="/oauth2/authorization/google"> Sign in with google</a></button>
+                            <button class="btn btn-lg btn-block btn-primary mb-2" style="background-color: #3b5998;" type="submit"><i class="fab fa-facebook-f me-2"></i>Sign in with facebook</button>
                         </div>
                     </div>
                 </div>

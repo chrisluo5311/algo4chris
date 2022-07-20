@@ -7,7 +7,7 @@ import com.algo4chris.algo4chriscommon.exception.responsecode.MgrResponseCode;
 import com.algo4chris.algo4chriscommon.exception.user.UserException;
 import com.algo4chris.algo4chriscommon.utils.WebUtils;
 import com.algo4chris.algo4chriscommon.utils.SessionUtils;
-import com.algo4chris.algo4chrisdal.repository.UserRepository;
+import com.algo4chris.algo4chrisdal.repository.MemberRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -28,7 +28,7 @@ public class WebConfig implements WebMvcConfigurer {
     ObjectMapper objectMapper;
 
     @Resource
-    UserRepository userRepository;
+    MemberRepository memberRepository;
 
     @Resource
     SessionUtils sessionUtils;
@@ -46,7 +46,7 @@ public class WebConfig implements WebMvcConfigurer {
                                                             request.getQueryString());
                         SessionEntity sessionEntity = sessionUtils.pullSessionFromRequest(request);
                         String userName = sessionEntity.getUserName();
-                        Member member = userRepository.findByMemberName(userName)
+                        Member member = memberRepository.findByMemberName(userName)
                                 .orElseThrow(()->new UserException(MgrResponseCode.MEMBER_NOT_FOUND,new Object[]{userName}));
                         sessionEntity.setUserId(member.getId());
                         if(StringUtils.isBlank(sessionEntity.getIp())) {

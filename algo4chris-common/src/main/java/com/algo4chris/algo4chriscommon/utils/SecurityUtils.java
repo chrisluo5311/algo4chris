@@ -19,7 +19,7 @@ public class SecurityUtils {
      *
      * @return 系统用户名称
      */
-    public static String getCurrentUsername() {
+    public static String getCurrentMemberName() {
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null) {
             throw new BadRequestException(HttpStatus.UNAUTHORIZED.value(), "用戶登入狀態過期");

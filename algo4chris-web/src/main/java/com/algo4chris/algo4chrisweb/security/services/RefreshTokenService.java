@@ -5,7 +5,7 @@ import com.algo4chris.algo4chriscommon.exception.tokenrefresh.TokenRefreshExcept
 import com.algo4chris.algo4chrisdal.models.Member;
 import com.algo4chris.algo4chrisdal.models.RefreshToken;
 import com.algo4chris.algo4chrisdal.repository.RefreshTokenRepository;
-import com.algo4chris.algo4chrisdal.repository.UserRepository;
+import com.algo4chris.algo4chrisdal.repository.MemberRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -28,7 +28,7 @@ public class RefreshTokenService {
     RefreshTokenRepository refreshTokenRepository;
 
     @Resource
-    UserRepository userRepository;
+    MemberRepository memberRepository;
 
     public Optional<RefreshToken> findByToken(String token) {
         return refreshTokenRepository.findByToken(token);
@@ -37,12 +37,12 @@ public class RefreshTokenService {
     /**
      * 產生 refresh token 並存至 db
      *
-     * @param userId 使用者id
+     * @param memberId 使用者id
      * */
-    public RefreshToken createRefreshToken(Long userId) {
+    public RefreshToken createRefreshToken(Long memberId) {
         RefreshToken refreshToken = new RefreshToken();
 
-        refreshToken.setMember(userRepository.findById(userId).get());
+        refreshToken.setMember(memberRepository.findById(memberId).get());
         refreshToken.setExpiryDate(Instant.now().plusMillis(refreshTokenDurationMs));
         refreshToken.setToken(UUID.randomUUID().toString());
 

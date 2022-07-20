@@ -3,7 +3,7 @@ package com.algo4chris.algo4chrisservice.tgbot.util;
 import com.algo4chris.algo4chriscommon.common.response.MgrResponseDto;
 import com.algo4chris.algo4chrisdal.models.Member;
 import com.algo4chris.algo4chrisservice.tgbot.enums.TelegramInfo;
-import com.algo4chris.algo4chrisdal.repository.UserRepository;
+import com.algo4chris.algo4chrisdal.repository.MemberRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +25,7 @@ import java.util.Optional;
 public class TgUtil {
 
     @Resource
-    UserRepository userRepository;
+    MemberRepository memberRepository;
 
     /**
      * 接收tg指令並做出相對應的動作
@@ -35,7 +35,7 @@ public class TgUtil {
     public void commandInstruct(String message){
         switch (message){
             case "查詢用戶資訊":
-                List<Member> memberList = userRepository.findAll();
+                List<Member> memberList = memberRepository.findAll();
                 sendMessage(MgrResponseDto.success(memberList));
                 break;
             default:

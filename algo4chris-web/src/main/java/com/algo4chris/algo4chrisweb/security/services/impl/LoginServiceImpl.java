@@ -9,7 +9,7 @@ import com.algo4chris.algo4chrisdal.models.*;
 import com.algo4chris.algo4chrisdal.models.enums.ERole;
 import com.algo4chris.algo4chrisdal.models.enums.Provider;
 import com.algo4chris.algo4chrisdal.repository.RoleRepository;
-import com.algo4chris.algo4chrisdal.repository.UserRepository;
+import com.algo4chris.algo4chrisdal.repository.MemberRepository;
 import com.algo4chris.algo4chrisdal.session.SessionEntity;
 import com.algo4chris.algo4chrisweb.payload.request.AlgoOAuth2User;
 import com.algo4chris.algo4chrisweb.payload.request.LoginRequest;
@@ -62,7 +62,7 @@ public class LoginServiceImpl implements LoginService {
     RefreshTokenService refreshTokenService;
 
     @Resource
-    UserRepository userRepository;
+    MemberRepository memberRepository;
 
     @Resource
     RoleRepository roleRepository;
@@ -82,11 +82,13 @@ public class LoginServiceImpl implements LoginService {
      * @return JwtResponse
      * */
     @Override
-    public JwtResponse loginMember(LoginRequest loginRequest) {
+    public JwtResponse loginMember(LoginRequest loginRequest, HttpServletRequest servletRequest) {
         String memberName = loginRequest.getMemberName();
         String password   = loginRequest.getPassword();
-        log.info("{} 用戶:{} 發送登入請求", LOG_PREFIX, memberName);
-        //驗證 用戶名與密碼
+        String ip         = WebUtils.getIp(servletRequest);
+        //查詢該用戶
+        Member member = memberRepository.findByMemberName(memberName).orElseThrow(
+                ()->new UserException(MgrResponseCode.MEMBER_NOT_FOUND,new Object[]{memberName}));
         Authentication authentication = null;
         try {
             authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(memberName, password));
@@ -97,7 +99,6 @@ public class LoginServiceImpl implements LoginService {
             log.error("用戶名:{}登入失败 INVALID_CREDENTIALS : {}", memberName, e.getMessage());
             throw new UserException(MgrResponseCode.MEMBER_PASSWORD_INVALID, new Object[]{memberName});
         }
-
         SecurityContextHolder.getContext().setAuthentication(authentication);
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         //產生jwtToken
@@ -107,10 +108,21 @@ public class LoginServiceImpl implements LoginService {
                                         .stream()
                                         .map(GrantedAuthority::getAuthority)
                                         .collect(Collectors.toList());
-        RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
+        //產生refresh token
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(member.getId());
         log.info("{} 用戶:{} 擁有角色:{} 登入成功", LOG_PREFIX, memberName, roles);
+        //更新用戶ip
+        member.setIp(ip);
+        memberRepository.save(member);
         //回傳JwtResponse
-        return new JwtResponse(jwtToken, refreshToken.getToken(), userDetails.getId(), userDetails.getUsername(), userDetails.getEmail(), roles);
+        return JwtResponse.builder()
+                .token(jwtToken)
+                .refreshToken(refreshToken.getToken())
+                .id(member.getId())
+                .memberName(memberName)
+                .email(member.getEmail())
+                .roles(roles)
+                .build();
     }
 
     /**
@@ -123,41 +135,49 @@ public class LoginServiceImpl implements LoginService {
      * */
     @Transactional
     @Override
-    public Member signUp(SignupRequest signUpRequest, HttpServletRequest servletRequest) {
+    public JwtResponse signUp(SignupRequest signUpRequest, HttpServletRequest servletRequest) {
         String ip         = WebUtils.getIp(servletRequest);
         String email      = signUpRequest.getEmail();
         String memberName = signUpRequest.getMemberName();
-        log.info("{} 新用戶:{} 註冊帳號", LOG_PREFIX, memberName);
         existsByMemberNameAndEmail(memberName,email);
-
         //創建用戶 狀態:預設 1:啟用
         Member member = Member.builder()
                               .memberName(memberName)
                               .email(email)
                               .password(encoder.encode(signUpRequest.getPassword()))
                               .ip(ip)
-                              .createTime(new Date())
                               .build();
         //取得註冊腳色
         Set<Integer> intRoles = signUpRequest.getRole();
-        Set<Role> userRoles   = new HashSet<>();
-        //为 null 预设USER
+        Set<Role> memberRoles   = new HashSet<>();
+        //為null預設ROLE_MEMBER
         if(Objects.isNull(intRoles)){
             roleRepository.findById(ERole.ROLE_MEMBER.getRoleId())
-                    .map(userRoles::add)
+                    .map(memberRoles::add)
                     .orElseThrow(() ->
                             new UserException(MgrResponseCode.ROLE_NOT_FOUND, new Object[]{ERole.ROLE_MEMBER}));
         } else {
             //未知權限一律預設為一般使用者
-            intRoles.stream().map(ERole::getERole).forEach(e->{
-                roleRepository.findById(e.getRoleId()).map(userRoles::add).orElseThrow(() ->
-                        new UserException(MgrResponseCode.ROLE_NOT_FOUND, new Object[]{e}));
+            intRoles.stream().map(ERole::getERole).forEach(r->{
+                roleRepository.findById(r.getRoleId()).map(memberRoles::add).orElseThrow(() ->
+                        new UserException(MgrResponseCode.ROLE_NOT_FOUND, new Object[]{r}));
             });
         }
-        member.setRoles(userRoles);
-        Member memberResult = userRepository.save(member);
+        member.setRoles(memberRoles);
+        Member newMember = memberRepository.save(member);
         log.info("{} 新用戶:{} 註冊成功", LOG_PREFIX,memberName);
-        return memberResult;
+        //產生jwtToken
+        String jwtToken = jwtUtils.generateTokenFromUsername(memberName);
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(newMember.getId());
+        List<String> rolesList = memberRoles.stream().map(Role::getName).map(ERole::name).collect(Collectors.toList());
+        return JwtResponse.builder()
+                .token(jwtToken)
+                .refreshToken(refreshToken.getToken())
+                .id(member.getId())
+                .memberName(memberName)
+                .email(member.getEmail())
+                .roles(rolesList)
+                .build();
     }
 
     /**
@@ -189,7 +209,7 @@ public class LoginServiceImpl implements LoginService {
     @Override
     public void logOutUser(SessionEntity sessionEntity, HttpServletRequest servletRequest) {
         Long userId = sessionEntity.getUserId();
-        Member member = userRepository.findById(userId)
+        Member member = memberRepository.findById(userId)
                 .orElseThrow(() -> new UserException(MgrResponseCode.MEMBER_NOT_FOUND, new Object[]{userId}));
         refreshTokenService.deleteByUserId(member);
         String jwtToken = jwtUtils.parseJwt(servletRequest);
@@ -197,34 +217,70 @@ public class LoginServiceImpl implements LoginService {
         log.info("{} 用戶:{} 登出裝置成功", LOG_PREFIX, member.getMemberName());
     }
 
+    /**
+     * 處理OAuth登入
+     *
+     * @param oAuth2User 自訂OAuth2User
+     * @param ip ip
+     * @return JwtResponse
+     * */
+    @Transactional
     @Override
     public JwtResponse processOAuthPostLogin(AlgoOAuth2User oAuth2User,String ip) {
         String memberName = oAuth2User.getName();
-        if(!userRepository.existsByMemberName(memberName)){
+        String email      = oAuth2User.getEmail();
+        if(!memberRepository.existsByEmail(email)){
+            //幫註冊帳號&登入
             Member member = Member.builder()
-                    .memberName(memberName)
-                    .email(oAuth2User.getEmail())
-                    .ip(ip)
-                    .createTime(new Date())
-                    .provider(Provider.GOOGLE)
-                    .build();
+                                  .memberName(memberName)
+                                  .email(email)
+                                  .ip(ip)
+                                  .createTime(new Date())
+                                  .provider(Provider.GOOGLE)
+                                  .build();
             Set<Role> memberRoles   = new HashSet<>();
             roleRepository.findById(ERole.ROLE_MEMBER.getRoleId())
                     .map(memberRoles::add)
                     .orElseThrow(() ->
                             new UserException(MgrResponseCode.ROLE_NOT_FOUND, new Object[]{ERole.ROLE_MEMBER}));
             member.setRoles(memberRoles);
-            Member result = userRepository.save(member);
+            Member result = memberRepository.save(member);
             //產生jwtToken
             String jwtToken = jwtUtils.generateTokenFromUsername(memberName);
             RefreshToken refreshToken = refreshTokenService.createRefreshToken(result.getId());
             List<String> rolesList = memberRoles.stream().map(Role::getName).map(ERole::name).collect(Collectors.toList());
-            log.info("{} 新用戶:{} 來源:{} 擁有角色:{} 註冊成功",LOG_PREFIX,memberName,Provider.GOOGLE,memberRoles);
+            log.info("{} 新用戶:{} 來源:{} 角色:{} 註冊成功",LOG_PREFIX,memberName,Provider.GOOGLE,memberRoles);
             //回傳JwtResponse
-            return new JwtResponse(jwtToken, refreshToken.getToken(),result.getId(),
-                                   memberName, oAuth2User.getEmail(), rolesList);
+            return JwtResponse.builder()
+                    .token(jwtToken)
+                    .refreshToken(refreshToken.getToken())
+                    .id(member.getId())
+                    .memberName(memberName)
+                    .email(member.getEmail())
+                    .roles(rolesList)
+                    .build();
         } else {
-            throw new UserException(MgrResponseCode.MEMBER_ALREADY_EXISTS,new Object[]{memberName});
+            //幫登入
+            Member member = memberRepository.findByEmail(email).orElseThrow(
+                    ()->new UserException(MgrResponseCode.MEMBER_NOT_FOUND,new Object[]{memberName}));
+            //產生jwtToken
+            String jwtToken = jwtUtils.generateTokenFromUsername(member.getMemberName());
+            //角色
+            List<String> roles = member.getRoles().stream().map(Role::getName).map(ERole::name).collect(Collectors.toList());
+            //產生refresh token
+            RefreshToken refreshToken = refreshTokenService.createRefreshToken(member.getId());
+            log.info("{} 用戶:{} 角色:{} 登入成功", LOG_PREFIX, memberName, roles);
+            //更新用戶登入ip
+            member.setIp(ip);
+            memberRepository.save(member);
+            return JwtResponse.builder()
+                              .token(jwtToken)
+                              .refreshToken(refreshToken.getToken())
+                              .id(member.getId())
+                              .memberName(memberName)
+                              .email(member.getEmail())
+                              .roles(roles)
+                              .build();
         }
     }
 
@@ -235,11 +291,11 @@ public class LoginServiceImpl implements LoginService {
      * @param email email
      * */
     public void existsByMemberNameAndEmail(String memberName,String email) throws UserException{
-        if (userRepository.existsByMemberName(memberName)) {
+        if (memberRepository.existsByMemberName(memberName)) {
             throw new UserException(MgrResponseCode.MEMBER_ALREADY_EXISTS, new Object[]{memberName});
         }
 
-        if (userRepository.existsByEmail(email)) {
+        if (memberRepository.existsByEmail(email)) {
             throw new UserException(MgrResponseCode.MEMBER_EMAIL_ALREADY_EXISTS, new Object[]{email});
         }
     }

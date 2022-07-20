@@ -1,33 +1,27 @@
 package com.algo4chris.algo4chrisweb.payload.response;
 
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 
+/**
+ * 含jwtToken及refreshToken響應類
+ *
+ * @author chris
+ * */
 @Data
-@Getter
-@Setter
+@Builder(toBuilder = true)
 @NoArgsConstructor
+@AllArgsConstructor
 public class JwtResponse {
 
     private String token;
+    @Builder.Default
     private String type = "Bearer ";
     private String refreshToken;
     private Long id;
-    private String username;
+    private String memberName;
     private String email;
     private List<String> roles;
-
-    public JwtResponse(String accessToken, String refreshToken, Long id, String username, String email, List<String> roles) {
-        this.token = accessToken;
-        this.refreshToken = refreshToken;
-        this.id = id;
-        this.username = username;
-        this.email = email;
-        this.roles = roles;
-    }
 
 }

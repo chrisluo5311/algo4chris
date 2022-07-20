@@ -32,6 +32,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import static com.algo4chris.algo4chriscommon.common.constant.JwtConstants.AUTHORIZATION_CODE_KEY;
+import static com.algo4chris.algo4chriscommon.common.constant.JwtConstants.BEARER_CODE_KEY;
 
 /**
  * 過濾每一次請求<br>
