@@ -20,9 +20,10 @@ public enum ERole {
 
     /**
      * 匹配角色roleId
-     * 預設 ROLE_USER
+     * 預設 ROLE_MEMBER
      *
      * @param roleId 前台傳入的roleId
+     * @return 回傳相應的ERole，預設回傳ROLE_MEMBER
      * */
     public static ERole getERole(int roleId){
         return Arrays.stream(ERole.values())
