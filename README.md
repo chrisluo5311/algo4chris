@@ -3,7 +3,6 @@ Springboot多模塊專案
 
 <div>
  <img src="https://komarev.com/ghpvc/?username=chrisluo5311&label=Profile%20views&color=red&style=flat" alt="chrisluo5311" />
- <img src="https://img.shields.io/github/v/tag/chrisluo5311/algo4chris" alt="chrisluo5311" />
  <img src="https://img.shields.io/github/languages/code-size/chrisluo5311/algo4chris" alt="chrisluo5311" />
  <img src="https://img.shields.io/github/commit-activity/m/chrisluo5311/algo4chris" alt="chrisluo5311" />
  </div> 
